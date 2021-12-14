@@ -1,0 +1,27 @@
+.challenge__subTitle {
+    font-size: 1rem;
+    font-weight: 500;
+    margin-bottom: 1rem;
+}
+
+.challenge__subDiv {
+    width: 60%;
+}
+
+.challenge_div {
+    align-items: center;
+}
+
+.challenge__user {
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+    gap: 50px;
+    margin-bottom: 30px;
+
+    button {
+        flex: 1;
+        width: 100%;
+        max-width: 300px;
+    }
+}
