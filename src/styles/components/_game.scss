@@ -1,0 +1,176 @@
+.game__div {
+    width: 100%;
+    height: 95vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+
+    header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding-top: 35px;
+        font-weight: 800;
+        color: #fff;
+    }
+
+    .game__handsPickDiv {
+        transform: rotate(-35deg);
+        display: flex;
+        flex-direction: column;
+        justify-content: space-around;
+    }
+}
+
+.game__handsPickDiv {
+    flex: 1;
+}
+
+.game__player2Choice {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex: 1;
+
+    h1 {
+        font-weight: 800;
+        color: #fff;
+    }
+}
+
+.game__player1Choice {
+    display: flex;
+    justify-content: flex-end;
+    flex: 1 1;
+    padding-right: 15%;
+
+    h1 {
+        text-align: center;
+        font-weight: 800;
+    }
+
+    svg {
+        width: 150px;
+    }
+}
+
+.game__player1ChoicePick {
+    width: 100%;
+    display: flex;
+    justify-content: space-around;
+}
+
+.game__player2ChoicePickand {
+    width: 100%;
+    display: flex;
+    justify-content: space-around;
+    gap: 100px;
+
+    svg {
+        width: 170px;
+        fill: #fff !important;
+    }
+}
+
+.game__paperImage {
+    transform: rotate(35deg);
+
+    svg {
+        width: 140px;
+    }
+}
+
+.game__scissorsImage {
+    transform: rotate(-35deg);
+}
+
+.game__winnerRound {
+    width: 15px;
+    height: 15px;
+    border-radius: 100%;
+}
+
+.game__gray {
+    background-color: #ccc;
+}
+
+.game__green {
+    background-color: #37BB5C;
+}
+
+.game__red {
+    background-color: #FF4A4A;
+}
+
+.game__nameDiv {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+
+    h4 {  
+        margin: 0;
+    }
+}
+
+.game__player1ChoiceHand {
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    align-content: center;
+    gap: 50px;
+}
+
+.game__hand {
+
+    cursor: pointer;
+    transition: all 0.1s ease-in-out;
+
+    &:hover {
+        transform: scale(1.1);
+        fill: #3EC6FF;
+    }
+}
+
+.game__rounds {
+    display: flex;
+    width: 100%;
+    align-items: center;
+    justify-content: space-around;
+
+    svg {
+        width: 70px;
+        height: 70px;
+        fill: #fff;
+    }
+}
+
+.game__round {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    color: #fff;
+    border-radius: 20px;
+}
+
+.game__roundLost {
+    background-color: #FF4A4A;
+}
+
+.game__roundWon {
+    background-color: #37BB5C;
+}
+
+.game__nameVsDiv {
+    display: flex;
+    justify-content: space-around;
+}
+
+.game__nextRound {
+    button {
+        float: right;
+    }
+}
+    

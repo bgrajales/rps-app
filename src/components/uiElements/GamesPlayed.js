@@ -1,11 +1,14 @@
 import React from 'react'
 
-export const GamesPlayed = () => {
+export const GamesPlayed = ({ gamesPlayed }) => {
+
     return (
         <div>
             <p>Games played</p>
             <h3>
-                406
+                {
+                    gamesPlayed
+                }
             </h3>
         </div>
     )

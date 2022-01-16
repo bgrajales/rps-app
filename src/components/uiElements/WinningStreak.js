@@ -1,11 +1,14 @@
 import React from 'react'
 
-export const WinningStreak = () => {
+export const WinningStreak = ({ winningStreak}) => {
+
     return (
         <div className="home__winningStreak">
             <h3>Winning streak</h3>
             <p>
-                5 games
+                {
+                   winningStreak
+                } games
             </p>
         </div>
     )

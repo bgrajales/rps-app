@@ -1,34 +1,33 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { Button, FormControl, InputGroup } from 'react-bootstrap'
+import { useSelector } from 'react-redux'
+import { useDispatch } from 'react-redux'
+import { useNavigate } from 'react-router-dom'
+
+import { getChallengers } from '../../actions/users'
 import { ChallengeUser } from '../uiElements/ChallengeUser'
 
-const users = [
-    {
-        id: 1,
-        name: 'demonSlayer',
-    },{
-        id: 2,
-        name: 'glarcErestf',
-    },{
-        id: 3,
-        name: 'einiColkwai',
-    },{
-        id: 4,
-        name: 'Waroingulsb',
-    },{
-        id: 5,
-        name: 'ionSisterge',
-    },{
-        id: 6,
-        name: 'sousHydimet ',
-    }
-]
-
 export const Challenge = () => {
+
+    const navigate = useNavigate()
+    const dispatch = useDispatch()
+    
+    const onlineUsers = useSelector(state => state.users.onlineUsers)
+    const user = useSelector(state => state.auth.user)
+
+    const handleGoBack = () => {
+        navigate('/app/home')
+    }
+
+    useEffect(() => {
+        dispatch( getChallengers( user.id ) )
+    }, [dispatch, user.id])
+
+    console.log(onlineUsers)
     return (
         <div className="base__div challenge_div">
             <header className="container base__secondaryHeader">
-                <Button variant="danger">Cancel</Button>{' '}
+                <Button variant="danger" onClick={ handleGoBack }>Cancel</Button>{' '}
             </header>
 
             <div className="base__titleDiv">
@@ -50,9 +49,14 @@ export const Challenge = () => {
             <div className="challenge__subDiv">
                 <h2 className="challenge__subTitle">Online players:</h2>
                 {
-                    users.map(user => (
-                        <ChallengeUser key={user.id} user={user} />
+                    onlineUsers?.length > 0 &&
+                    onlineUsers.map(user => (
+                        <ChallengeUser key={ user.id } user={ user } />
                     ))
+                }
+                {
+                    onlineUsers?.length === 0 &&
+                    <p>No online players</p>
                 }
             </div>
         </div>

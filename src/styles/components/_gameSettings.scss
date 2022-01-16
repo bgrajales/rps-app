@@ -1,0 +1,42 @@
+.gameSettings__header {
+    display: flex;
+    justify-content: space-around;
+}
+
+.gameSettings__readyDiv {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+
+    p {
+        margin: 0;
+    }
+}
+
+.gameSettings__settingsDiv {
+    display: flex;
+    gap: 50px;
+    flex-direction: column;
+}
+
+.gameSettings__item {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+
+    h2 {
+        font-size: 3rem;
+    }
+}
+
+.gameSettings__inputDiv {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+
+    h4 {
+        margin: 0;
+    }
+}

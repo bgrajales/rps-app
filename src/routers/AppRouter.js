@@ -1,19 +1,39 @@
-import React from 'react'
+import React, { useEffect } from 'react'
+import { useDispatch } from 'react-redux';
 import {
     BrowserRouter as Router,
     Routes,
     Route
 } from "react-router-dom";
-import { Challenge } from '../components/pages/Challenge';
-import { Home } from '../components/pages/Home';
+
+import { userAlreadyLoggedIn } from '../actions/auth';
+
+import { PublicRoute } from './PublicRoute';
+import { PrivateRoute } from './PrivateRoute';
+import { AuthRouter } from './AuthRouter';
+import { DashboardRouter } from './DashboardRouter';
 
 export const AppRouter = () => {
+
+    const dispatch = useDispatch();
+
+    useEffect(() => {
+        const refreshToken = localStorage.getItem('refreshToken') || undefined;
+
+        if (refreshToken) {
+            dispatch( userAlreadyLoggedIn( refreshToken ) )
+        } else {
+            // dispatch({
+            //     logout()
+            // })
+        }
+    }, [dispatch])
     return (
         <Router>
             <div>
                 <Routes>
 
-                    {/* <Route path="/*" element={
+                    <Route path="/*" element={
                         <PublicRoute>
                             <AuthRouter />
                         </PublicRoute>
@@ -25,10 +45,6 @@ export const AppRouter = () => {
                         </PrivateRoute>
                     }/>
 
-                    <Route path="/forbidden" element={<Forbidden />} /> */}
-                    
-                    <Route path="app/home" element={<Home />}/>
-                    <Route path="app/challenge" element={<Challenge />}/>
                 </Routes>
             </div>
         </Router>

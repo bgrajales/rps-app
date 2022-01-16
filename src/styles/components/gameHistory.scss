@@ -1,0 +1,45 @@
+.gameHistory__ul {
+    display: flex;
+    flex-direction: column;
+    gap: 50px;
+    margin-top: 45px;
+}
+
+.gameHistory__li {
+    list-style: none;
+    display: flex;
+    flex-direction: row;
+    align-content: center;
+    align-items: center;
+
+    span {
+
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 10px;
+        background-color: #3EC6FF;
+        border-radius: 10px;
+        color: #fff;
+        
+        svg {
+            width: 80px;
+            height: 80px;
+            fill: #fff;
+        }
+    }
+}
+
+.gameHistory__infoDiv {
+    flex: 1;
+}
+
+.gameHistory__picksDiv {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-around;
+    width: 100%;
+    height: 100%;
+    flex: 3;
+}
