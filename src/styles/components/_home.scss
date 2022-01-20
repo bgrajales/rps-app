@@ -10,6 +10,13 @@
     }
 }
 
+.home__stats {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+}
+
 .home__statsDiv {
     display: flex;
     justify-content: space-around;

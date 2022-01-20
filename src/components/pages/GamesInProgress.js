@@ -4,6 +4,7 @@ import { Button } from 'react-bootstrap'
 import { getActiveGames } from '../../actions/users'
 import { useSelector } from 'react-redux'
 import { GameDiv } from '../uiElements/GameDiv'
+import { HiHome } from 'react-icons/hi'
 
 export const GamesInProgress = () => {
 
@@ -11,10 +12,6 @@ export const GamesInProgress = () => {
 
     const user = useSelector(state => state.auth.user)
     const [currentGames, setCurrentGames] = useState([]);
-
-    const handleGoBack = () => {
-        navigate(-1)
-    }
 
     useEffect( () => {
 
@@ -24,9 +21,17 @@ export const GamesInProgress = () => {
 
     return (
         <div className="base__div">
-             <header className="container home__header">
+            <header className="container home__header">
                 <h1>RPS</h1>
                 <div>
+                    <NavLink
+                        to="/app/home"
+                        className={
+                            ({ isActive }) => isActive ? 'active' : ''
+                        }
+                    >
+                        <HiHome />
+                    </NavLink>
                     <NavLink 
                         to="/app/gamesInProgress" 
                         className={
@@ -45,12 +50,11 @@ export const GamesInProgress = () => {
                     </NavLink>
 
                 </div>
-                <Button variant="danger" onClick={ handleGoBack }>Go Back</Button>{' '}
             </header>
 
             {
                 currentGames.length > 0 ?
-                <>
+                <div className="gameProgress__bodyDiv">
                     <h2>Games in progress</h2>
                     <ul>
                         {
@@ -59,9 +63,18 @@ export const GamesInProgress = () => {
                             ))
                         }
                     </ul>
-                </>
+                </div>
                 :
-                <h2>No games in progress</h2>
+                <div className="gameProgress__bodyDiv">
+                    <div className="gameProgress__noGames">
+                        <h2>No games in progress</h2>
+                        <p>You can challenge a player by clicking the button below</p>
+
+                        <NavLink to="/app/challenge">
+                            <Button variant="primary">Challenge a player</Button>
+                        </NavLink>
+                    </div>
+                </div>
             }
         </div>
     )

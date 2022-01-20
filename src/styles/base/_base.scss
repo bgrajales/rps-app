@@ -11,6 +11,7 @@
 .base__div {
     width: 100%;
     height: 95vh;
+    padding-top: 25px;
     display: flex;
     flex-direction: column;
     justify-content: space-around;
@@ -30,9 +31,4 @@
         font-weight: 600;
         margin: 0;
     }
-}
-
-.game-page {
-    background: linear-gradient(to right bottom, #3EC6FF 50%, #fff 50%);
-    height: 100vh;
 }

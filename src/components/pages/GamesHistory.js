@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { Button } from 'react-bootstrap'
 import { NavLink } from 'react-router-dom'
 import { useSelector } from 'react-redux'
+import { HiHome } from 'react-icons/hi'
 
 import { GameHistoryLi } from '../uiElements/GameHistoryLi'
 import { getGamesHistory } from '../../actions/users'
@@ -18,12 +19,19 @@ export const GamesHistory = () => {
 
     }, [ user.id ])
 
-    if( games.length > 0 ) {
         return (
             <div className="base__div">
                 <header className="container home__header">
                     <h1>RPS</h1>
                     <div>
+                        <NavLink
+                            to="/app/home"
+                            className={
+                                ({ isActive }) => isActive ? 'active' : ''
+                            }
+                        >
+                            <HiHome />
+                        </NavLink>
                         <NavLink 
                             to="/app/gamesInProgress" 
                             className={
@@ -42,25 +50,38 @@ export const GamesHistory = () => {
                         </NavLink>
 
                     </div>
-                    <Button variant="danger" >Go Back</Button>{' '}
                 </header>
                 
-                <div>
+                {
+                    games.length > 0 ?
+                    <div className="gameHistory__bodyDiv">
 
-                    <h2>Games History</h2>
+                        <h2>Games History</h2>
 
-                    <ul className="gameHistory__ul">
-                        {
-                            games.map( game => (
-                                <GameHistoryLi key={ game.id } game={ game } />
-                            ))
-                        }
-                    </ul>
+                        <ul className="gameHistory__ul">
+                            {
+                                games.map( game => (
+                                    <GameHistoryLi key={ game.id } game={ game } />
+                                ))
+                            }
+                        </ul>
 
-                </div>
+                    </div>
+                    :
+                    <div className="gameHistory__bodyDiv">
+
+                        <div className="gameHistory__noGames">
+                            <h2>No games played yet</h2>
+                            <p>You can challenge a player by clicking the button below</p>
+
+                            <NavLink to="/app/challenge">
+                                <Button variant="primary">Challenge a player</Button>
+                            </NavLink>
+                        </div>
+                    </div>
+                    
+                }
             </div>
         )
-    } else {
-        return null
-    }
+    
 }

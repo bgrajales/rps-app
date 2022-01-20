@@ -2,6 +2,7 @@ import { apiUrl } from '../utils/apiUrl'
 import axios from 'axios'
 
 import { types } from "../types/types"
+import { socket } from './users'
 // import { startLoading } from "./ui"
 
 export const userLogin = ( userName, password ) => {
@@ -23,7 +24,11 @@ export const userLogin = ( userName, password ) => {
         })
         .then( ({ data }) => {
             console.log(data)
+
+            socket.emit('login', 'data')
+
             dispatch( login( data.user, data.token, data.refreshToken ) )
+            
         })
         .catch( err => {
             console.log(err)
@@ -69,6 +74,8 @@ export const userAlreadyLoggedIn = ( refreshToken ) => {
         })
         .then( ({ data }) => {
             dispatch( login( data.user, data.token, refreshToken ) )
+
+            socket.emit('login', data.user.id)
         })
         .catch( err => {
             console.log(err)

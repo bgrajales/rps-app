@@ -2,11 +2,13 @@ import React, { useEffect, useState } from 'react'
 import { Button } from 'react-bootstrap'
 import { useSelector } from 'react-redux'
 import { useParams } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 
-import { finishGameAction, getGameRound, goToNextRound, setActiveGamePlayerHand } from '../../actions/users'
+import { finishGameAction, getGameRound, goToNextRound, setActiveGamePlayerHand, socket } from '../../actions/users'
 import { ReactComponent as Paper } from '../../assets/images/paper.svg'
 import { ReactComponent as Rock } from '../../assets/images/rock.svg'
 import { ReactComponent as Scissors } from '../../assets/images/scissors.svg'
+import { setWinner } from '../../utils/setWinner'
 import { Player1Choice } from '../uiElements/Player1Choice'
 import { Player2Choice } from '../uiElements/Player2Choice'
 import { PlayerChoiceResume } from '../uiElements/PlayerChoiceResume'
@@ -14,12 +16,16 @@ import { RoundWinnerIndicator } from '../uiElements/RoundWinnerIndicator'
 
 export const Game = () => {
 
+    const navigate = useNavigate()
+
     const { gameId } = useParams()
 
     const user = useSelector(state => state.auth.user)
     
     const [activeGame, setActiveGame] = useState({})
-    
+
+    const [ currentRound, setCurrentRound ] = useState(1)
+
     const [roundGame, setRound] = useState({
         round: 'null',
         player1hand: 'null',
@@ -29,7 +35,6 @@ export const Game = () => {
 
     useEffect(() => {
         
-        console.log(user.id, gameId)
         getGameRound( user.id, gameId, setRound, setActiveGame )
         document.body.classList.add('game-page')
 
@@ -37,11 +42,16 @@ export const Game = () => {
             document.body.classList.remove('game-page')
         }
 
-    }, [ user.id, gameId, setRound, setActiveGame ])
+    }, [ user.id, gameId, currentRound ])
 
     const pickHand = ( hand ) => {
 
-        setActiveGamePlayerHand( user.id, activeGame.player2.id, activeGame.id, roundGame.round, hand, setRound )
+        socket.emit('handPicked', {
+            gameId: activeGame.id,
+            handPicked: hand
+        })
+
+        setActiveGamePlayerHand( user.id, activeGame.player2.id, activeGame.id, roundGame.round, hand, setRound, roundGame, setActiveGame, activeGame )
 
     }
 
@@ -49,14 +59,52 @@ export const Game = () => {
 
         goToNextRound( user.id, activeGame.id, roundGame.round, setRound )
 
+        if( roundGame.round < 3 ) {
+            
+            setActiveGame({
+                ...activeGame,
+                currentRound: activeGame.currentRound+1
+            })
+
+            setCurrentRound( currentRound+1 )
+            
+        } 
+        
     }
 
     const finishGame = ( ) => {
         finishGameAction( user.id, activeGame.id )
+
+        navigate('/app/home')
     }
+
+    // const getGameResume = ( ) => {
+
+    //     getGameRound( user.id, gameId, setRound, setActiveGame )
+
+    // }
+    
+    socket.on('handPickedPlayer2', (data) => {
+
+        const roundWinner = setWinner( roundGame.player1hand, data )
+
+        const updatedRound = {
+            round: roundGame.round,
+            player1hand: roundGame.player1hand,
+            player2hand: data,
+            winner: roundWinner
+        }
+
+        setRound(updatedRound)
+    })
 
     if ( roundGame.round === 3 && roundGame.winner !== 'null' ) {
         document.body.classList.remove('game-page')
+
+        if( currentRound !== 1 ){
+            setCurrentRound( 1 )
+            // getGameResume()
+        }
     }
 
     if ( roundGame.round === 3 && roundGame.winner !== 'null' ) {
@@ -139,7 +187,7 @@ export const Game = () => {
                         </div>
                     </div>
 
-                    <Button variant="danger">
+                    <Button variant="danger" onClick={ () => navigate('/app/home') }>
                         Leave Game
                     </Button>
                 </header>
@@ -149,7 +197,9 @@ export const Game = () => {
                         {
                             roundGame.player2hand === 'null' || roundGame.player1hand === 'null' ?
                             <div className="game__player2ChoiceNull">
-                                <h1>Waiting for Player 2...</h1>
+                                <h1>{
+                                    roundGame.player2hand === 'null' ? 'Waiting for Player 2' : 'Player 2 has picked!'
+                                }</h1>
                             </div>
                             :
                             <div className="game__player2ChoicePickand">
@@ -186,7 +236,7 @@ export const Game = () => {
                     
                 </div>
                 {
-                    roundGame.winner !== 'null' &&
+                    (roundGame.round !== 3 && (roundGame.player1hand !== 'null' && roundGame.player2hand !== 'null')) &&
                     <div className="game__nextRound">
                         <Button variant="primary" onClick={ () => nextRound() }>
                             Next Round

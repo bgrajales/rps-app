@@ -1,3 +1,8 @@
+.game-page {
+    background: linear-gradient(145deg, #3EC6FF 50%, #fff 50%);
+    height: 100vh;
+}
+
 .game__div {
     width: 100%;
     height: 95vh;
@@ -15,7 +20,8 @@
     }
 
     .game__handsPickDiv {
-        transform: rotate(-35deg);
+
+        transform: rotate(325deg);
         display: flex;
         flex-direction: column;
         justify-content: space-around;
@@ -57,14 +63,16 @@
 .game__player1ChoicePick {
     width: 100%;
     display: flex;
-    justify-content: space-around;
+    justify-content: center;
+    gap: 150px;
 }
 
 .game__player2ChoicePickand {
     width: 100%;
     display: flex;
-    justify-content: space-around;
-    gap: 100px;
+    grid-gap: 100px;
+    gap: 150px;
+    justify-content: center;
 
     svg {
         width: 170px;

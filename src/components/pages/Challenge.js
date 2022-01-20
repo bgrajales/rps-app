@@ -30,34 +30,36 @@ export const Challenge = () => {
                 <Button variant="danger" onClick={ handleGoBack }>Cancel</Button>{' '}
             </header>
 
-            <div className="base__titleDiv">
-                <h2>Challenge a player</h2>
-            </div>
+            <div className="challenge__infoDiv">
+                <div className="base__titleDiv">
+                    <h2>Challenge a player</h2>
+                </div>
 
-            <div className="challenge__subDiv">
-                <h2 className="challenge__subTitle">Search a friend</h2>
-                <InputGroup className="mb-3">
-                    <InputGroup.Text id="basic-addon1">@</InputGroup.Text>
-                    <FormControl
-                    placeholder="Username"
-                    aria-label="Username"
-                    aria-describedby="basic-addon1"
-                    />
-                </InputGroup>
-            </div>
+                <div className="challenge__subDiv">
+                    <h2 className="challenge__subTitle">Search a friend</h2>
+                    <InputGroup className="mb-3">
+                        <InputGroup.Text id="basic-addon1">@</InputGroup.Text>
+                        <FormControl
+                        placeholder="Username"
+                        aria-label="Username"
+                        aria-describedby="basic-addon1"
+                        />
+                    </InputGroup>
+                </div>
 
-            <div className="challenge__subDiv">
-                <h2 className="challenge__subTitle">Online players:</h2>
-                {
-                    onlineUsers?.length > 0 &&
-                    onlineUsers.map(user => (
-                        <ChallengeUser key={ user.id } user={ user } />
-                    ))
-                }
-                {
-                    onlineUsers?.length === 0 &&
-                    <p>No online players</p>
-                }
+                <div className="challenge__subDiv">
+                    <h2 className="challenge__subTitle">Online players:</h2>
+                    {
+                        onlineUsers?.length > 0 &&
+                        onlineUsers.map(user => (
+                            <ChallengeUser key={ user.id } user={ user } />
+                        ))
+                    }
+                    {
+                        onlineUsers?.length === 0 &&
+                        <p>No online players</p>
+                    }
+                </div>
             </div>
         </div>
     )

@@ -3,6 +3,11 @@ import axios from 'axios'
 
 import { types } from "../types/types"
 
+import socketIOClient from 'socket.io-client'
+
+const ENDPOINT = 'http://localhost:4001';
+export const socket = socketIOClient(ENDPOINT);
+
 export const getChallengers = ( userId ) => {
         return (dispatch) => {
             const headers = {
@@ -42,7 +47,7 @@ export const getStats = ( userId, setStats ) => {
 
 }
 
-export const challengeUser = ( userId, challengedId, userName, challengedName ) => {
+export const challengeUser = ( userId, challengedId, userName, challengedName, navigate ) => {
 
     return (dispatch) => {
         console.log(userId, challengedId)
@@ -57,6 +62,14 @@ export const challengeUser = ( userId, challengedId, userName, challengedName ) 
         .then( ({ data }) => {
             console.log(data)
             if (data.gameId) {
+
+                socket.emit('sendChallenge', {
+                    gameId: data.gameId,
+                    challenger: userName,
+                    challenged: challengedId,
+                })
+
+                navigate(`/app/game/${ data.gameId }`)
             }
             // dispatch( setChallenge(data.challenge) )
         })
@@ -113,7 +126,7 @@ export const getGameRound = ( userId, gameId, setRound, setActiveGame ) => {
 
 }
 
-export const setActiveGamePlayerHand = ( userId, challengedId, gameId, round, hand, setRound ) => {
+export const setActiveGamePlayerHand = ( userId, challengedId, gameId, round, hand, setRound, roundGame, setActiveGame, activeGame ) => {
 
     const headers = {
         'Content-Type': 'application/json'
@@ -123,12 +136,27 @@ export const setActiveGamePlayerHand = ( userId, challengedId, gameId, round, ha
         headers: headers
     }).then( ({ data }) => {
         console.log(data)
-        setRound({
+
+        const newRound = {
             round: round,
             player1hand: hand,
-            player2hand: 'null',
-            winner: 'null'
-        })
+            player2hand: roundGame.player2hand,
+            winner: data.winner            
+        }
+    
+        setRound(newRound)
+
+        const newActiveGame = {
+            ...activeGame,
+            rounds: [
+                ...activeGame.rounds.slice(0, round-1),
+                newRound,
+                ...activeGame.rounds.slice(round)
+            ]
+        }
+
+        setActiveGame(newActiveGame)
+    
     }).catch( err => {
         console.log(err)
     })

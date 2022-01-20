@@ -2,7 +2,18 @@ import React from 'react'
 import { Button } from 'react-bootstrap'
 import { NavLink } from 'react-router-dom'
 
+import { socket } from '../../actions/users'
+
 export const GameDiv = ({ game }) => {
+
+    const handleContinue = () => {
+        console.log('continue')
+
+        socket.emit('joinGame', {
+            gameId: game.id,
+        })
+    }
+
     return (
         <>
           <li className="gamesProgress__li">
@@ -38,7 +49,7 @@ export const GameDiv = ({ game }) => {
                 </div>
                 <hr />
                 <NavLink to={`/app/game/${game.id}`}>
-                    <Button variant="primary">                    
+                    <Button variant="primary" onClick={ handleContinue }>                    
                         Continue Game
                     </Button>
                 </NavLink>

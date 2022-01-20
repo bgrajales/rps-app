@@ -2,8 +2,6 @@ import React from 'react'
 
 export const RoundWinnerIndicator = ( { round, player } ) => {
 
-    console.log(round.winner)
-
     return (
         <div
             className={
