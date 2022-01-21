@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { NavLink, useNavigate } from 'react-router-dom'
+import { NavLink } from 'react-router-dom'
 import { Button } from 'react-bootstrap'
 import { getActiveGames } from '../../actions/users'
 import { useSelector } from 'react-redux'
@@ -7,8 +7,6 @@ import { GameDiv } from '../uiElements/GameDiv'
 import { HiHome } from 'react-icons/hi'
 
 export const GamesInProgress = () => {
-
-    const navigate = useNavigate()
 
     const user = useSelector(state => state.auth.user)
     const [currentGames, setCurrentGames] = useState([]);

@@ -227,3 +227,39 @@ export const getGamesHistory = ( userId, setGames ) => {
     })
 
 }
+
+export const markNotificationAsRead = ( userId ) => {
+
+    const headers = {
+            'Content-Type': 'application/json'
+        }
+    
+        axios.post(`${apiUrl('markNotificationAsRead')}?userId=${userId}`, {
+            headers: headers
+        }).then( ( { data } ) => {
+
+            console.log(data)
+            
+        }).catch( err => {
+            console.log(err)
+        })
+    
+}
+
+export const deleteSelectedNotif = ( userId, gameId ) => {
+
+    const headers = {
+        'Content-Type': 'application/json'
+    }
+
+    axios.post(`${apiUrl('deleteSelectedNotif')}?userId=${userId}&gameId=${gameId}`, {
+        headers: headers    
+    }).then( ( { data } ) => {
+
+        console.log(data)
+
+    }).catch( err => {
+        console.log(err)
+    })
+
+}

@@ -32,3 +32,33 @@
         margin: 0;
     }
 }
+
+.dropdown-toggle::after {
+    display: none;
+}
+
+.badgeDot::before {
+    content: "";
+    position: absolute;
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background-color: #ff3e3e;
+    margin-left: 8px;
+}
+
+.dropdown-menu {
+    position: absolute !important;
+    inset: 0px auto auto 0px !important;
+    transform: translate(-50%, 40px) !important;
+    left: 50% !important;
+}
+
+.dropdown-item {
+
+    p {
+        margin: 0;
+    }
+    
+}

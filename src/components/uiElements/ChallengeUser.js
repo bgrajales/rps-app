@@ -15,6 +15,7 @@ export const ChallengeUser = ({ user }) => {
         console.log('challenge user', user.id)
 
         dispatch( challengeUser( challenger.id, user.id, challenger.userName, user.userName, navigate ) )
+
     }
     
     return (
