@@ -2,6 +2,7 @@ import React from 'react'
 import { Button } from 'react-bootstrap'
 import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
+
 import { challengeUser } from '../../actions/users'
 
 export const ChallengeUser = ({ user }) => {

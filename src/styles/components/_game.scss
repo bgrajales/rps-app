@@ -161,6 +161,11 @@
     align-items: center;
     color: #fff;
     border-radius: 20px;
+    height: 150px;
+
+    svg {
+        fill: #fff;
+    }
 }
 
 .game__roundLost {
@@ -173,12 +178,38 @@
 
 .game__nameVsDiv {
     display: flex;
-    justify-content: space-around;
+    justify-content: space-evenly;
 }
 
 .game__nextRound {
     button {
         float: right;
     }
+}
+
+.game__parent {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: repeat(3, 1fr);
+    grid-column-gap: 0px;
+    grid-row-gap: 0px;
+    }
+    
+.game__div1 { 
+    grid-area: 1 / 1 / 4 / 2;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 30px;
+}
+
+.game__div2 { 
+    grid-area: 1 / 2 / 4 / 3;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 30px;
 }
     

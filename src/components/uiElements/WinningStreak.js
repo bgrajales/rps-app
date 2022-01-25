@@ -1,6 +1,6 @@
 import React from 'react'
 
-export const WinningStreak = ({ winningStreak}) => {
+export const WinningStreak = ({ winningStreak }) => {
 
     return (
         <div className="home__winningStreak">
@@ -8,7 +8,10 @@ export const WinningStreak = ({ winningStreak}) => {
             <p>
                 {
                    winningStreak
-                } games
+                }
+                {
+                    winningStreak === 1 ? ' game' : ' games'
+                }
             </p>
         </div>
     )

@@ -2,13 +2,12 @@ import React, { useEffect, useState } from 'react'
 import { Button, Dropdown } from 'react-bootstrap'
 import { useDispatch, useSelector } from 'react-redux'
 import { NavLink, Link } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 
 import { BsFillBellFill } from 'react-icons/bs'
 import { FaTrash } from 'react-icons/fa'
 import { FiMoreHorizontal } from 'react-icons/fi'
-
 import { HiHome } from 'react-icons/hi'
-import { useNavigate } from 'react-router-dom'
 
 import { userLogout } from '../../actions/auth'
 import { deleteSelectedNotif, getStats, markNotificationAsRead, socket } from '../../actions/users'
@@ -61,7 +60,13 @@ export const Home = () => {
 
         const notifArray = notifications
 
-        notifArray.push(newNotification)
+        const indexOf = notifArray.findIndex(notif => notif.gameId === challenge.gameId)
+
+        if ( indexOf === -1 ) {
+
+            notifArray.push(newNotification)
+
+        }
 
         setNotifications(notifArray)
 
@@ -102,6 +107,10 @@ export const Home = () => {
             setNotifications(notifArray)
         
         }
+
+        socket.emit('joinGame', {
+            gameId: gameId,
+        })
         
         navigate(`/app/game/${gameId}`)
     }
@@ -138,39 +147,37 @@ export const Home = () => {
 
             <header className="container home__header">
                 <h1>RPS</h1>
-                <div>
+                <div className="base__navBar">
                     <NavLink
                         to="/app/home"
                         className={
                             ({ isActive }) => isActive ? 'active' : ''
                         }
                     >
-                        <HiHome />
+                        <HiHome className="base__navHome base__navLink" />
                     </NavLink>
                     <NavLink 
                             to="/app/gamesInProgress" 
                             className={
-                                ({ isActive }) => isActive ? 'active' : ''
+                                ({ isActive }) => isActive ? 'base__navLink active' : 'base__navLink'
                             }
                         >
-                            <Button variant="link">Games in progress</Button>
+                            Games in progress
                         </NavLink>
                         <NavLink 
                             to="/app/gamesHistory"
                             className={
-                                ({ isActive }) => isActive ? 'active' : ''
+                                ({ isActive }) => isActive ? 'base__navLink active' : 'base__navLink'
                             }
                         >
-                            <Button variant="link">Games History</Button>
+                            Games History
                         </NavLink>
-
-
                 </div>
 
                 
                 <Dropdown onClick={ handleReadNotifications }>
                     <Dropdown.Toggle variant="" id="dropdown-basic" className={ badgeIcon ? 'badgeDot' : '' }>
-                        <BsFillBellFill />
+                        <BsFillBellFill className="home__notifBell" />
                     </Dropdown.Toggle>
 
                     <Dropdown.Menu>

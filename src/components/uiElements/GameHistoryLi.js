@@ -10,9 +10,15 @@ export const GameHistoryLi = ({ game }) => {
     return (
         <li className="gameHistory__li">
             <div className="gameHistory__infoDiv">
-                <p>Finished:  { format(new Date(game.endDate), 'LLLL do yyyy') }</p>
-                <p>Against:  { game.opponent }</p>
-                <p>{ 
+                <div className="gameHistory__finishedAndOpp">
+                    <h5>Finished:</h5>  
+                    <p>{ format(new Date(game.endDate), 'LLLL do yyyy') }</p>
+                </div>
+                <div className="gameHistory__finishedAndOpp">
+                    <h5>Opponent:</h5>  
+                    <p>{ game.opponent }</p>
+                </div>
+                <p className={ game.win === 1 ? 'badge bg-success' : 'badge bg-danger' }>{ 
                     game.win === 1 ? 'Game Won' : 'Game Lost'
                 }</p>
             </div>

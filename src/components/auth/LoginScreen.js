@@ -1,6 +1,8 @@
 import React from 'react'
 import { Button } from 'react-bootstrap'
 import { useDispatch } from 'react-redux'
+import { Link } from 'react-router-dom'
+
 import { userLogin } from '../../actions/auth'
 import { useForm } from '../../hooks/useForm'
 
@@ -20,28 +22,35 @@ export const LoginScreen = () => {
     }
 
     return (
-        <div>
-            <header className="container login__header">
-                <h1>RPS</h1>
-            </header>
+        <div className="auth__pageDiv">
+            <div className="auth__formDiv shadow">
+                <header className="container auth__header">
+                    <h1>RPS</h1>
+                </header>
 
-            <form className="login__form" onSubmit={ handleLoginSubmit }>
-                <div className="login__formDiv">
-                    <label htmlFor="username">Username</label>
-                    <input type="text" id="username" name="userName" value={ formValues.userName } onChange={ handleInputChange }/>
-                </div>
-                <div className="login__formDiv">
-                    <label htmlFor="password">Password</label>
-                    <input type="password" id="password" name="password" value={ formValues.password } onChange={ handleInputChange } />
-                </div>
+                <form className="auth__form" onSubmit={ handleLoginSubmit }>
+                    <div className="auth__formInput">
+                        <label htmlFor="username">Username</label>
+                        <input className="form-control" type="text" id="username" name="userName" value={ formValues.userName } onChange={ handleInputChange }/>
+                    </div>
+                    <div className="auth__formInput">
+                        <label htmlFor="password">Password</label>
+                        <input className="form-control" type="password" id="password" name="password" value={ formValues.password } onChange={ handleInputChange } />
+                    </div>
 
-                <div className="d-grid gap-2 container">
-                    <Button variant="primary" size="lg" type="submit">
-                        Login
-                    </Button>
-                </div>
-            </form>
+                    <div className="d-grid gap-2">
+                        <Button variant="primary" size="lg" type="submit">
+                            Login
+                        </Button>
+                    </div>
 
+                    <Link to="/register">
+                        <p>
+                            Don't have an account?
+                        </p>
+                    </Link>
+                </form>
+            </div>
             
         </div>
     )

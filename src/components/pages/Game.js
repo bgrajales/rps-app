@@ -22,9 +22,10 @@ export const Game = () => {
 
     const user = useSelector(state => state.auth.user)
     
-    const [activeGame, setActiveGame] = useState({})
+    const [ activeGame, setActiveGame ] = useState({})
 
     const [ currentRound, setCurrentRound ] = useState(1)
+    const [ updateGame, setUpdateGame ] = useState(false)
 
     const [roundGame, setRound] = useState({
         round: 'null',
@@ -42,7 +43,7 @@ export const Game = () => {
             document.body.classList.remove('game-page')
         }
 
-    }, [ user.id, gameId, currentRound ])
+    }, [ user.id, gameId, updateGame ])
 
     const pickHand = ( hand ) => {
 
@@ -73,16 +74,16 @@ export const Game = () => {
     }
 
     const finishGame = ( ) => {
+        console.log('finish game', user.id, activeGame.id)
+
         finishGameAction( user.id, activeGame.id )
 
-        navigate('/app/home')
+        setTimeout(() => {
+
+            navigate('/app/home')
+
+        }, 1000)
     }
-
-    // const getGameResume = ( ) => {
-
-    //     getGameRound( user.id, gameId, setRound, setActiveGame )
-
-    // }
     
     socket.on('handPickedPlayer2', (data) => {
 
@@ -96,6 +97,11 @@ export const Game = () => {
         }
 
         setRound(updatedRound)
+        
+        setTimeout(() => {
+            setUpdateGame(!updateGame)        
+        }, 1000)
+
     })
 
     if ( roundGame.round === 3 && roundGame.winner !== 'null' ) {
@@ -103,7 +109,6 @@ export const Game = () => {
 
         if( currentRound !== 1 ){
             setCurrentRound( 1 )
-            // getGameResume()
         }
     }
 
@@ -112,52 +117,50 @@ export const Game = () => {
             <div className="base__div game__div">
 
                 <div className="game__nameVsDiv">
-                    <h2>
+                    <h1>
                         {
                             activeGame.player1.userName
                         }
-                    </h2>
+                    </h1>
                     <h1>VS</h1>
-                    <h2>
+                    <h1>
                         {
                             activeGame.player2.userName
                         }
-                    </h2>
+                    </h1>
                 </div>   
 
-                <h4>You</h4>
-                <div className="game__rounds">
-                    {
-                        activeGame.rounds.map( ( round, index ) => {
-                            return (
-                                <PlayerChoiceResume 
-                                    key={index}
-                                    round={round}
-                                    player={ 'player1' }
-                                />
-                            )
-                        })
-                    }
-                </div>   
+                <div class="game__parent">
+                    <div class="game__div1">
+                        {
+                            activeGame.rounds.map( ( round, index ) => {
+                                return (
+                                    <PlayerChoiceResume 
+                                        key={index}
+                                        round={round}
+                                        player={ 'player1' }
+                                    />
+                                )
+                            })
+                        }
+                    </div>
+                    
+                    <div class="game__div2">
+                        {
+                            activeGame.rounds.map( ( round, index ) => {
+                                return (
+                                    <PlayerChoiceResume 
+                                        key={index}
+                                        round={round}
+                                        player={ 'player2' }
+                                    />
+                                )
+                            })
+                        }
+                    </div>
+                </div>
 
-                <h4>{
-                    activeGame.player2.userName
-                }</h4>
-                 <div className="game__rounds">
-                    {
-                        activeGame.rounds.map( ( round, index ) => {
-                            return (
-                                <PlayerChoiceResume 
-                                    key={index}
-                                    round={round}
-                                    player={ 'player2' }
-                                />
-                            )
-                        })
-                    }
-                </div>           
-
-                <Button onClick={ finishGame }>
+                <Button onClick={ finishGame } className="container">
                     Finish Game
                 </Button>
             </div>

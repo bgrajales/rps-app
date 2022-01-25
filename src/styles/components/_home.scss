@@ -74,3 +74,11 @@
         cursor: pointer;
     }
 }
+
+.home__notifBell {
+
+    &:hover {
+        cursor: pointer;
+        fill: #3EC6FF;
+    }
+}

@@ -5,7 +5,7 @@ import { types } from "../types/types"
 
 import socketIOClient from 'socket.io-client'
 
-const ENDPOINT = 'http://localhost:4001';
+const ENDPOINT = `${process.env.REACT_APP_API_PROTOCOL}://${process.env.REACT_APP_API_HOST}`;
 export const socket = socketIOClient(ENDPOINT);
 
 export const getChallengers = ( userId ) => {
@@ -69,6 +69,10 @@ export const challengeUser = ( userId, challengedId, userName, challengedName, n
                     challenged: challengedId,
                 })
 
+                socket.emit('joinGame', {
+                    gameId: data.gameId,
+                })
+
                 navigate(`/app/game/${ data.gameId }`)
             }
             // dispatch( setChallenge(data.challenge) )
@@ -82,17 +86,18 @@ export const challengeUser = ( userId, challengedId, userName, challengedName, n
 
 }
 
-export const getActiveGames = ( userId, setCurrentGames ) => {
+export const getActiveGames = ( userId, setCurrentGames, page, setMaxPages ) => {
 
     const headers = {
         'Content-Type': 'application/json'
     }
 
-    axios.get(`${apiUrl('getActiveGames')}?userId=${userId}`, {
+    axios.get(`${apiUrl('getActiveGames')}?userId=${userId}&page=${page}`, {
         headers: headers
     }).then( ({ data }) => {
-        console.log(data.activeGames)
-        setCurrentGames(data.activeGames)
+        console.log(data)
+        setCurrentGames(data.games)
+        setMaxPages(data.maxPages)
     }).catch( err => {
         console.log(err)
     })
@@ -211,17 +216,19 @@ export const setOnlineUsers = ( users ) => {
     }
 }
 
-export const getGamesHistory = ( userId, setGames ) => {
+export const getGamesHistory = ( userId, setGames, page, setMaxPage ) => {
 
     const headers = {
         'Content-Type': 'application/json'
     }
 
-    axios.get((`${apiUrl('getGamesHistory')}?userId=${userId}`), {
+    axios.get((`${apiUrl('getGamesHistory')}?userId=${userId}&page=${page}`), {
         headers: headers
     }).then( ({ data }) => {
-        console.log(data)
-        setGames(data.gamesHistory)
+
+        setGames(data.games)
+        setMaxPage(data.maxPages)
+
     }).catch( err => {
         console.log(err)
     })

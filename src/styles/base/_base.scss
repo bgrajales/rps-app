@@ -1,3 +1,12 @@
+* {
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
+}
+
+*::-webkit-scrollbar {
+    display: none;
+}
+
 .btn {
     border-radius: 15px
 }
@@ -61,4 +70,47 @@
         margin: 0;
     }
     
+}
+
+.badge {
+    font-size: 1em;
+    font-weight: 500;
+}
+
+.base__navHome {
+    width: 20px;
+    height: 20px;
+}
+
+.base__navLink {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #363636;
+    text-decoration: none;
+
+    &:hover {
+        color: #3EC6FF;
+    }
+}
+
+.base__navBar {
+    display: flex;
+    gap: 20px;
+
+    a {
+        display: flex;
+        align-items: center;
+        position: relative;
+    }
+
+    .active::after {
+        content: "";
+        position: absolute;
+        display: inline-block;
+        width: 100%;
+        height: 5px;
+        border-radius: 5px;
+        background-color: #3EC6FF;
+        bottom: -5px;
+    }
 }

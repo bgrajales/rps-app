@@ -7,7 +7,6 @@ import {
 } from "react-router-dom";
 
 import { userAlreadyLoggedIn } from '../actions/auth';
-
 import { PublicRoute } from './PublicRoute';
 import { PrivateRoute } from './PrivateRoute';
 import { AuthRouter } from './AuthRouter';

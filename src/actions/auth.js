@@ -25,7 +25,7 @@ export const userLogin = ( userName, password ) => {
         .then( ({ data }) => {
             console.log(data)
 
-            socket.emit('login', 'data')
+            socket.emit('login', data.user.id)
 
             dispatch( login( data.user, data.token, data.refreshToken ) )
             
@@ -35,6 +35,41 @@ export const userLogin = ( userName, password ) => {
             // Swal.fire('Error', err.message, 'error')
         })
     }
+}
+
+export const userRegister = ( userName, password, repeatPassword ) => {
+
+    return (dispatch) => {
+        console.log(userName, password, repeatPassword)
+
+        // dispatch( startLoading() )
+        const headers = {
+            'Content-Type': 'application/json'
+        }
+
+        const user = {
+            userName,
+            password,
+            repeatPassword
+        }
+
+        axios.post(apiUrl('register'), JSON.stringify(user), {
+            headers: headers
+        })
+        .then( ({ data }) => {
+            console.log(data)
+
+            socket.emit('login', data.user.id)
+
+            dispatch( login( data.user, data.token, data.refreshToken ) )
+            
+        })
+        .catch( err => {
+            console.log(err)
+            // Swal.fire('Error', err.message, 'error')
+        })
+    }
+    
 }
 
 export const userLogout = (userId) => {

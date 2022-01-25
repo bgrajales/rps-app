@@ -1,16 +1,27 @@
 .gamesProgress__li {
     list-style: none;
     text-align: center;
+    margin-bottom: 30px;
 }
 
 .gamesProgress__roundsDiv {
     display: flex;
     justify-content: space-around;
     gap: 10px;
+    flex: 3;
+}
+
+.gamesProgress__opponent {
+    flex: 1;
 }
 
 .gamesProgress__round {
     text-align: center;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-around;
 }
 
 .gameProgress__bodyDiv {
@@ -20,6 +31,7 @@
     justify-content: space-evenly;
     padding: 30px 0;
     gap: 35px;
+    overflow: hidden;
 
     h2 {
         text-align: center;
@@ -36,4 +48,37 @@
     flex-direction: column;
     align-items: center;
     gap: 20px;
+}
+
+.gameProgress__vsDiv {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    svg {
+        width: 35px;
+        height: 50px;
+    }
+
+    p {
+        margin: 0;
+        font-weight: 700;
+    }
+
+}
+
+.gamesProgress__liDiv {
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+}
+
+.gameProgress__hr {
+    border: 0;
+    height: 15px !important;
+    background-color: #fff;
+    background-image: url(../../assets/images/repeat-8.png);
+    background-repeat: repeat-x;
+    background-size: 80px 15px;
+    overflow: hidden;
 }
