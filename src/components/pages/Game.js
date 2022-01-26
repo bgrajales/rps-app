@@ -137,7 +137,7 @@ export const Game = () => {
                                 return (
                                     <PlayerChoiceResume 
                                         key={index}
-                                        round={round}
+                                        round={ round}
                                         player={ 'player1' }
                                     />
                                 )

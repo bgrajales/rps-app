@@ -148,33 +148,6 @@ export const Home = () => {
             <header className="container home__header">
                 <h1>RPS</h1>
                 <div className="base__navBar">
-                    <NavLink
-                        to="/app/home"
-                        className={
-                            ({ isActive }) => isActive ? 'active' : ''
-                        }
-                    >
-                        <HiHome className="base__navHome base__navLink" />
-                    </NavLink>
-                    <NavLink 
-                            to="/app/gamesInProgress" 
-                            className={
-                                ({ isActive }) => isActive ? 'base__navLink active' : 'base__navLink'
-                            }
-                        >
-                            Games in progress
-                        </NavLink>
-                        <NavLink 
-                            to="/app/gamesHistory"
-                            className={
-                                ({ isActive }) => isActive ? 'base__navLink active' : 'base__navLink'
-                            }
-                        >
-                            Games History
-                        </NavLink>
-                </div>
-
-                
                 <Dropdown onClick={ handleReadNotifications }>
                     <Dropdown.Toggle variant="" id="dropdown-basic" className={ badgeIcon ? 'badgeDot' : '' }>
                         <BsFillBellFill className="home__notifBell" />
@@ -203,9 +176,32 @@ export const Home = () => {
 
                         }
                     </Dropdown.Menu>
-                </Dropdown>
-
-                <Button variant="danger" onClick={ handleLogout }>Logout</Button>{' '}
+                    </Dropdown>
+                    <NavLink
+                        to="/app/home"
+                        className={
+                            ({ isActive }) => isActive ? 'active' : ''
+                        }
+                    >
+                        <HiHome className="base__navHome base__navLink" />
+                    </NavLink>
+                    <NavLink 
+                            to="/app/gamesInProgress" 
+                            className={
+                                ({ isActive }) => isActive ? 'base__navLink active' : 'base__navLink'
+                            }
+                        >
+                            Games
+                        </NavLink>
+                        <NavLink 
+                            to="/app/gamesHistory"
+                            className={
+                                ({ isActive }) => isActive ? 'base__navLink active' : 'base__navLink'
+                            }
+                        >
+                            History
+                        </NavLink>
+                </div>
             </header>
 
             <div className="container home__stats">
@@ -221,10 +217,13 @@ export const Home = () => {
                 <WinningStreak winningStreak={ stats.winningStreak }/>
             
                 <Link to="/app/challenge">
-                    <div className="d-grid gap-2 container">
+                    <div className="home__btnDiv container">
                         <Button variant="primary" size="lg">
                             Start new game
                         </Button>
+                        <Button variant="danger" onClick={ handleLogout }>
+                            Logout    
+                        </Button>{' '}
                     </div>
                 </Link>
             </div>

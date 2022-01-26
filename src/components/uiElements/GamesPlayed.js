@@ -4,7 +4,7 @@ export const GamesPlayed = ({ gamesPlayed }) => {
 
     return (
         <div>
-            <p>Games played</p>
+            <p>Played</p>
             <h3>
                 {
                     gamesPlayed

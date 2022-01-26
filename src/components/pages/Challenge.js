@@ -1,10 +1,10 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Button, FormControl, InputGroup } from 'react-bootstrap'
 import { useSelector } from 'react-redux'
 import { useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 
-import { getChallengers } from '../../actions/users'
+import { getChallengers, searchUser } from '../../actions/users'
 import { ChallengeUser } from '../uiElements/ChallengeUser'
 
 export const Challenge = () => {
@@ -15,6 +15,13 @@ export const Challenge = () => {
     const onlineUsers = useSelector(state => state.users.onlineUsers)
     const user = useSelector(state => state.auth.user)
 
+    const [ userInput, setUserInput ] = useState('')
+
+    const [ userSearched, setUserSearched ] = useState({
+        userName: '',
+        userId: '',
+    })
+
     const handleGoBack = () => {
         navigate('/app/home')
     }
@@ -23,7 +30,21 @@ export const Challenge = () => {
         dispatch( getChallengers( user.id ) )
     }, [dispatch, user.id])
 
-    console.log(onlineUsers)
+    const handleSearchChange = (e) => {
+        setUserInput(e.target.value)
+
+        if (e.target.value.length > 5) {
+
+            searchUser(e.target.value, setUserSearched)
+
+        } else {
+            setUserSearched({
+                userName: '',
+                userId: '',
+            })
+        }
+    }
+
     return (
         <div className="base__div challenge_div">
             <header className="container base__secondaryHeader">
@@ -32,7 +53,11 @@ export const Challenge = () => {
 
             <div className="challenge__infoDiv">
                 <div className="base__titleDiv">
-                    <h2>Challenge a player</h2>
+                    <h2 styles={
+                        {
+                            textAlign: 'center',
+                        }
+                    }>Challenge a player</h2>
                 </div>
 
                 <div className="challenge__subDiv">
@@ -40,11 +65,30 @@ export const Challenge = () => {
                     <InputGroup className="mb-3">
                         <InputGroup.Text id="basic-addon1">@</InputGroup.Text>
                         <FormControl
-                        placeholder="Username"
-                        aria-label="Username"
-                        aria-describedby="basic-addon1"
+                            placeholder="Username"
+                            aria-label="Username"
+                            aria-describedby="basic-addon1"
+                            value={ userInput }
+                            onChange={ handleSearchChange }
                         />
+                        <div className="challenge__searchInfo">
+                        {
+                            userSearched.userName && userInput.length > 5 ?
+                            <ChallengeUser
+                                key={ userSearched.userId }
+                                user={ {
+                                    userName: userSearched.userName,
+                                    id: userSearched.userId,
+                                } }
+                            />
+                            : userSearched.userName === '' && userInput.length > 5 ?
+                            <h2>No user found</h2>
+                            : null
+                        }
+                        </div>
                     </InputGroup>
+
+                    
                 </div>
 
                 <div className="challenge__subDiv">

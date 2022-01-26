@@ -63,7 +63,7 @@ export const GamesInProgress = () => {
                                 ({ isActive }) => isActive ? 'base__navLink active' : 'base__navLink'
                             }
                         >
-                            Games in progress
+                            Games
                         </NavLink>
                         <NavLink 
                             to="/app/gamesHistory"
@@ -71,7 +71,7 @@ export const GamesInProgress = () => {
                                 ({ isActive }) => isActive ? 'base__navLink active' : 'base__navLink'
                             }
                         >
-                            Games History
+                            History
                         </NavLink>
                 </div>
             </header>

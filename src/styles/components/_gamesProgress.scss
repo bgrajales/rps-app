@@ -48,6 +48,10 @@
     flex-direction: column;
     align-items: center;
     gap: 20px;
+
+    p {
+        text-align: center;
+    }
 }
 
 .gameProgress__vsDiv {
@@ -73,12 +77,24 @@
     align-items: center;
 }
 
-.gameProgress__hr {
-    border: 0;
-    height: 15px !important;
-    background-color: #fff;
-    background-image: url(../../assets/images/repeat-8.png);
-    background-repeat: repeat-x;
-    background-size: 80px 15px;
-    overflow: hidden;
+// .gameProgress__hr {
+//     border: 0;
+//     height: 15px !important;
+//     background-color: #fff;
+//     background-image: url(../../assets/images/repeat-8.png);
+//     background-repeat: repeat-x;
+//     background-size: 80px 15px;
+//     overflow: hidden;
+// }
+
+@media (max-width: 576px) {
+
+    ul {
+        padding-left: 0;
+    }
+
+    .gamesProgress__roundsDiv {
+        display: none;
+    }
+
 }

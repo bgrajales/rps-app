@@ -270,3 +270,30 @@ export const deleteSelectedNotif = ( userId, gameId ) => {
     })
 
 }
+
+export const searchUser = ( userName, setUserSearched ) => {
+
+
+    const headers = {
+        'Content-Type': 'application/json'
+    }
+
+    axios.post(`${apiUrl('searchUser')}?userName=${userName}`, {
+        headers: headers
+    }).then( ( { data } ) => {
+
+        console.log(data)
+        
+        if( data.userName ) {
+            setUserSearched({
+                userName: data.userName,
+                userId: data.userId
+            })
+        }  
+
+    }).catch( err => {
+        console.log(err)
+    })
+
+
+}

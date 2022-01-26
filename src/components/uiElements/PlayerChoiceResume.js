@@ -12,7 +12,9 @@ export const PlayerChoiceResume = ({ round, player }) => {
             <div className={`game__round ${
                 round.winner !== player ? 'game__roundLost' : 'game__roundWon'
             }`}>
-                <h3>Round 1</h3>
+                <h3>Round {
+                    round.round    
+                }</h3>
                 {
                     round.player1hand === 'p'
                     ? <Paper />
@@ -27,7 +29,9 @@ export const PlayerChoiceResume = ({ round, player }) => {
             <div className={`game__round ${
                 round.winner !== player ? 'game__roundLost' : 'game__roundWon'
             }`}>
-                <h3>Round 1</h3>
+                <h3>Round {
+                    round.round    
+                }</h3>
                 {
                     round.player2hand === 'p'
                     ? <Paper />

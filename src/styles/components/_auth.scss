@@ -49,3 +49,11 @@
     flex-direction: column;
     gap: 10px;
 }
+
+@media (max-width: 576px) {
+
+    .auth__formDiv {
+        width: 90%;
+    }
+
+}

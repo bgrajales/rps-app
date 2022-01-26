@@ -19,11 +19,14 @@
 
 .base__div {
     width: 100%;
-    height: 95vh;
+    height: 100vh;
     padding-top: 25px;
     display: flex;
     flex-direction: column;
     justify-content: space-around;
+    background-image: url(../../assets/images/pattern-8.png);
+    background-repeat: repeat;
+    background-size: 300px 300px;
 }
 
 .base__secondaryHeader {
@@ -103,6 +106,14 @@
         position: relative;
     }
 
+    .active {
+        color: #3EC6FF;
+
+        svg {
+            fill: #3EC6FF;
+        }
+    }
+
     .active::after {
         content: "";
         position: absolute;
@@ -112,5 +123,40 @@
         border-radius: 5px;
         background-color: #3EC6FF;
         bottom: -5px;
+    }
+}
+
+.home__btnDiv {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    grid-gap: 15px;
+    gap: 15px;
+}
+
+@media (max-width: 576px) {
+    
+    .base__div {
+        padding: 25px 25px;
+    }
+
+    .home__header {
+
+        h1 {
+            font-size: 2rem !important;
+        }
+    }
+
+    .home__statsDiv {
+        
+        gap: 20px; 
+        div {
+            flex: 1;
+            
+            p {
+                font-size: 1rem !important;
+
+            }
+        }
     }
 }
