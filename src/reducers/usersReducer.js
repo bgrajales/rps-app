@@ -1,6 +1,6 @@
 import { types } from "../types/types"
 
-export const usersReducers = ( state = {}, action ) => {
+export const usersReducer = ( state = {}, action ) => {
 
     switch ( action.type ) {
         case types.GET_USERS_LIST:

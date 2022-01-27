@@ -86,7 +86,7 @@ export const challengeUser = ( userId, challengedId, userName, challengedName, n
 
 }
 
-export const getActiveGames = ( userId, setCurrentGames, page, setMaxPages ) => {
+export const getActiveGames = ( userId, setCurrentGames, page, setMaxPages, setLoader ) => {
 
     const headers = {
         'Content-Type': 'application/json'
@@ -98,6 +98,7 @@ export const getActiveGames = ( userId, setCurrentGames, page, setMaxPages ) => 
         console.log(data)
         setCurrentGames(data.games)
         setMaxPages(data.maxPages)
+        setLoader(false)
     }).catch( err => {
         console.log(err)
     })
@@ -216,7 +217,7 @@ export const setOnlineUsers = ( users ) => {
     }
 }
 
-export const getGamesHistory = ( userId, setGames, page, setMaxPage ) => {
+export const getGamesHistory = ( userId, setGames, page, setMaxPage, setLoader ) => {
 
     const headers = {
         'Content-Type': 'application/json'
@@ -228,7 +229,8 @@ export const getGamesHistory = ( userId, setGames, page, setMaxPage ) => {
 
         setGames(data.games)
         setMaxPage(data.maxPages)
-
+        setLoader(false)
+        
     }).catch( err => {
         console.log(err)
     })

@@ -3,6 +3,7 @@ import axios from 'axios'
 
 import { types } from "../types/types"
 import { socket } from './users'
+import { finishLoading } from './ui'
 // import { startLoading } from "./ui"
 
 export const userLogin = ( userName, password ) => {
@@ -109,7 +110,7 @@ export const userAlreadyLoggedIn = ( refreshToken ) => {
         })
         .then( ({ data }) => {
             dispatch( login( data.user, data.token, refreshToken ) )
-
+            dispatch( finishLoading() )
             socket.emit('login', data.user.id)
         })
         .catch( err => {

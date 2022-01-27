@@ -11,5 +11,10 @@ export const types = {
     GET_USERS_SUCCESS: '[Users] GET_USERS_SUCCESS',
     GET_USERS_FAILURE: '[Users] GET_USERS_FAILURE',
 
+    // UI
+
+    uiStartLoading: '[UI] UI Start Loading',
+    uiFinishLoading: '[UI] UI Finish Loading',
+
 
 }

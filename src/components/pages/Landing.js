@@ -1,7 +1,17 @@
 import React from 'react';
 import { Button } from 'react-bootstrap';
+import { MutatingDots } from 'react-loader-spinner';
+import { useSelector } from 'react-redux';
+
+import { ReactComponent as Paper } from '../../assets/images/paper.svg'
+import { ReactComponent as Rock } from '../../assets/images/rock.svg'
+import { ReactComponent as Scissors } from '../../assets/images/scissors.svg'
 
 export const Landing = () => {
+
+  const isLoading = useSelector(state => state.loader.isLoading);
+
+
   return <div className="landing__div">
       <header className="container landing__header">
                 <h1>RPS</h1>
@@ -32,5 +42,15 @@ export const Landing = () => {
             <img src={ require('../../assets/images/landingImage.png').default } alt="rock-paper-scissors-game" className="landing__image" />
           </div>
       </main>
+      {
+        isLoading === undefined || isLoading === true ?
+        <div className="landing__loader">
+          <div className="landing__rpsLoader">
+            <MutatingDots ariaLabel="loading-indicator" color={'black'} secondaryColor='black' />
+          </div>
+        </div>
+        :
+        null
+      }
   </div>;
 };

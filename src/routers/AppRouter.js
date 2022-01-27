@@ -11,21 +11,26 @@ import { PublicRoute } from './PublicRoute';
 import { PrivateRoute } from './PrivateRoute';
 import { AuthRouter } from './AuthRouter';
 import { DashboardRouter } from './DashboardRouter';
+import { finishLoading, startLoading } from '../actions/ui';
 
 export const AppRouter = () => {
 
     const dispatch = useDispatch();
 
     useEffect(() => {
+
+        dispatch( startLoading() );
+
         const refreshToken = localStorage.getItem('refreshToken') || undefined;
 
-        if (refreshToken) {
-            dispatch( userAlreadyLoggedIn( refreshToken ) )
-        } else {
-            // dispatch({
-            //     logout()
-            // })
-        }
+        setTimeout(() => {
+            if (refreshToken) {
+                dispatch( userAlreadyLoggedIn( refreshToken ) )
+            } else {
+                dispatch( finishLoading() )
+            }
+        }, 1500)
+
     }, [dispatch])
     return (
         <Router>

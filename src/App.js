@@ -3,6 +3,7 @@ import { useEffect } from 'react'
 
 import { AppRouter } from "./routers/AppRouter";
 import { store } from './store/store';
+import "react-loader-spinner/dist/loader/css/react-spinner-loader.css";
 
 function App() {
 

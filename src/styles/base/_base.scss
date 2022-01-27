@@ -134,6 +134,13 @@
     gap: 15px;
 }
 
+.base__rpsLoader {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
 @media (max-width: 576px) {
     
     .base__div {

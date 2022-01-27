@@ -7,6 +7,7 @@ import { FcNext, FcPrevious } from 'react-icons/fc'
 
 import { GameHistoryLi } from '../uiElements/GameHistoryLi'
 import { getGamesHistory } from '../../actions/users'
+import { MutatingDots } from 'react-loader-spinner'
 
 export const GamesHistory = () => {
 
@@ -14,12 +15,13 @@ export const GamesHistory = () => {
 
     const [games, setGames] = useState([])
     const [ page, setPage] = useState(1)
+    const [ loader, setLoader ] = useState(true)
 
     const [ maxPage, setMaxPage] = useState(1)
 
     useEffect( () => {
 
-        getGamesHistory( user.id, setGames, page, setMaxPage )
+        getGamesHistory( user.id, setGames, page, setMaxPage, setLoader )
 
     }, [ user.id, page ])
 
@@ -74,7 +76,7 @@ export const GamesHistory = () => {
             </header>
             
             {
-                games.length > 0 ?
+                games.length > 0 && loader === false ?
                 <div className="gameHistory__bodyDiv">
 
                     <div className="gameHistory__titleDiv">
@@ -91,7 +93,7 @@ export const GamesHistory = () => {
                     </ul>
 
                 </div>
-                :
+                : loader === false ?
                 <div className="gameHistory__bodyDiv">
 
                     <div className="gameHistory__noGames">
@@ -103,8 +105,15 @@ export const GamesHistory = () => {
                         </NavLink>
                     </div>
                 </div>
+                : loader === true ?
+                <div className="base__rpsLoader">
+                    <MutatingDots ariaLabel="loading-indicator" color={'black'} secondaryColor='black' />
+                </div>
+                :
+                null
                 
             }
+
         </div>
     )
     

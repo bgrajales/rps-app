@@ -8,10 +8,13 @@ import { FcNext, FcPrevious } from 'react-icons/fc'
 
 import { GameDiv } from '../uiElements/GameDiv'
 import { getActiveGames } from '../../actions/users'
+import { MutatingDots } from 'react-loader-spinner'
 
 export const GamesInProgress = () => {
 
     const user = useSelector(state => state.auth.user)
+
+    const [ loader, setLoader ] = useState(true)
 
     const [currentGames, setCurrentGames] = useState([]);
 
@@ -20,7 +23,7 @@ export const GamesInProgress = () => {
 
     useEffect( () => {
 
-        getActiveGames(user.id, setCurrentGames, page, setMaxPages)
+        getActiveGames(user.id, setCurrentGames, page, setMaxPages, setLoader)
 
     }, [user.id, page])
 
@@ -77,7 +80,7 @@ export const GamesInProgress = () => {
             </header>
 
             {
-                currentGames.length > 0 ?
+                currentGames.length > 0 && loader === false ?
                 <div className="gameProgress__bodyDiv">
 
                     <div className="gameHistory__titleDiv">
@@ -94,7 +97,7 @@ export const GamesInProgress = () => {
                         }
                     </ul>
                 </div>
-                :
+                : loader === false ?
                 <div className="gameProgress__bodyDiv">
                     <div className="gameProgress__noGames">
                         <h2>No games in progress</h2>
@@ -105,6 +108,12 @@ export const GamesInProgress = () => {
                         </NavLink>
                     </div>
                 </div>
+                : loader === true ?
+                <div className="base__rpsLoader">
+                    <MutatingDots ariaLabel="loading-indicator" color={'black'} secondaryColor='black' />
+                </div>
+                :
+                null
             }
         </div>
     )
