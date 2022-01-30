@@ -3,10 +3,6 @@ import { Button } from 'react-bootstrap';
 import { MutatingDots } from 'react-loader-spinner';
 import { useSelector } from 'react-redux';
 
-import { ReactComponent as Paper } from '../../assets/images/paper.svg'
-import { ReactComponent as Rock } from '../../assets/images/rock.svg'
-import { ReactComponent as Scissors } from '../../assets/images/scissors.svg'
-
 export const Landing = () => {
 
   const isLoading = useSelector(state => state.loader.isLoading);

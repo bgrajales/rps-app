@@ -16,5 +16,10 @@ export const types = {
     uiStartLoading: '[UI] UI Start Loading',
     uiFinishLoading: '[UI] UI Finish Loading',
 
+    // Error
+
+    ERROR: '[Error] ERROR',
+    CLEAR_ERROR: '[Error] CLEAR_ERROR',
+
 
 }

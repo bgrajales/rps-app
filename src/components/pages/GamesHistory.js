@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { Button } from 'react-bootstrap'
 import { NavLink } from 'react-router-dom'
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { HiHome } from 'react-icons/hi'
 import { FcNext, FcPrevious } from 'react-icons/fc'
 
@@ -11,8 +11,12 @@ import { MutatingDots } from 'react-loader-spinner'
 
 export const GamesHistory = () => {
 
-    const { user } = useSelector(state => state.auth)
+    const dispatch = useDispatch()
 
+    const { user } = useSelector(state => state.auth)
+    const token = useSelector(state => state.auth.token)
+    const refreshToken = useSelector(state => state.auth.refreshToken)
+    
     const [games, setGames] = useState([])
     const [ page, setPage] = useState(1)
     const [ loader, setLoader ] = useState(true)
@@ -21,9 +25,9 @@ export const GamesHistory = () => {
 
     useEffect( () => {
 
-        getGamesHistory( user.id, setGames, page, setMaxPage, setLoader )
+        dispatch(getGamesHistory( user.id, setGames, page, setMaxPage, setLoader, token, refreshToken ))
 
-    }, [ user.id, page ])
+    }, [ user.id, page, token, refreshToken, dispatch])
 
     const nextPage = () => {
 
@@ -84,7 +88,7 @@ export const GamesHistory = () => {
                         <h2>Games History</h2>
                         <FcNext onClick={ nextPage }/>
                     </div>
-                    <ul className="gameHistory__ul">
+                    <ul className="gameHistory__ul container">
                         {
                             games.map( game => (
                                 <GameHistoryLi key={ game.id } game={ game } />

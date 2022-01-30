@@ -1,16 +1,24 @@
 import React from 'react'
 import { Button } from 'react-bootstrap'
 import { NavLink } from 'react-router-dom'
+import { useSelector } from 'react-redux'
 
 import { socket } from '../../actions/users'
+import { deleteSelectedNotif } from '../../actions/users'
 import { ReactComponent as Paper } from '../../assets/images/paper.svg'
 import { ReactComponent as Rock } from '../../assets/images/rock.svg'
 import { ReactComponent as Scissors } from '../../assets/images/scissors.svg'
 
 export const GameDiv = ({ game }) => {
 
+    const user = useSelector(state => state.auth.user)
+    const token = useSelector(state => state.auth.token)
+
+
     const handleContinue = () => {
         console.log('continue')
+
+        deleteSelectedNotif( user.id, game.id, token )
 
         socket.emit('joinGame', {
             gameId: game.id,
@@ -19,8 +27,7 @@ export const GameDiv = ({ game }) => {
 
     return (
         <>
-          <li className="gamesProgress__li">
-              <hr className="gameProgress__hr"/>
+          <li className="gamesProgress__li shadow">
               <div className="gamesProgress__liDiv">
                 <div className="gamesProgress__opponent">
                     <h3>{ game.player2.userName }</h3>

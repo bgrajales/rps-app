@@ -8,7 +8,7 @@ import { ReactComponent as Scissors } from '../../assets/images/scissors.svg'
 
 export const GameHistoryLi = ({ game }) => {
     return (
-        <li className="gameHistory__li">
+        <li className="gameHistory__li shadow">
             <div className="gameHistory__infoDiv">
                 <div className="gameHistory__finishedAndOpp">
                     <h5>Finished:</h5>  
@@ -18,16 +18,25 @@ export const GameHistoryLi = ({ game }) => {
                     <h5>Opponent:</h5>  
                     <p>{ game.opponent }</p>
                 </div>
-                <p className={ game.win === 1 ? 'badge bg-success' : 'badge bg-danger' }>{ 
-                    game.win === 1 ? 'Game Won' : 'Game Lost'
+                <p className={ game.win === 1 ? 'badge bg-success' : game.win === 2 ? 'badge bg-primary' : 'badge bg-danger'}>{ 
+                    game.win === 1 ? 'Game Won' : game.win === 2 ? 'Game Tied' : 'Game Lost'
                 }</p>
             </div>
             <div className="gameHistory__picksDiv">{ 
-                game.picks.map( pick => (
-                    <span key={ `${uuidv4()}` }>{ 
-                        pick === 'r' ? <><Rock /> <span>Rock</span></> :
-                        pick === 'p' ? <><Paper /> <span>Paper</span></> :
-                        pick === 's' ? <><Scissors /> <span>Scissors</span></> :
+                // game.picks.map( pick => (
+                //     <span key={ `${uuidv4()}` }>{ 
+                //         pick === 'r' ? <><Rock /> <span>Rock</span></> :
+                //         pick === 'p' ? <><Paper /> <span>Paper</span></> :
+                //         pick === 's' ? <><Scissors /> <span>Scissors</span></> :
+                //         ''
+                //     }</span>
+
+                // ))
+                game.picks.map( el => (
+                    <span key={ `${uuidv4()}` } className={ el.winner === 'player1' ? 'gameHistory__won' : el.winner === 'tie' ? 'gameHistory__tie' : 'gameHistory__lost'}>{
+                        el.pick === 'r' ? <><Rock /> <span>Rock</span></> :
+                        el.pick === 'p' ? <><Paper /> <span>Paper</span></> :
+                        el.pick === 's' ? <><Scissors /> <span>Scissors</span></> :
                         ''
                     }</span>
                 ))

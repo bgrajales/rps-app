@@ -22,6 +22,9 @@ export const Home = () => {
 
     const user = useSelector(state => state.auth.user)
     const userNotification = useSelector(state => state.auth.user.notifications)
+    const token = useSelector(state => state.auth.token)
+    const refreshToken = useSelector(state => state.auth.refreshToken)
+
     const [ badgeIcon, setBadgeIcon ] = useState(false)
 
     const [ notifications, setNotifications ] = useState([])
@@ -41,11 +44,11 @@ export const Home = () => {
 
     useEffect(() => {
 
-        getStats( user.id, setStats )
+        dispatch(getStats( user.id, setStats, token, refreshToken ))
 
         setNotifications( userNotification )
 
-    }, [ user.id, userNotification ])
+    }, [ user.id, userNotification, token, refreshToken, dispatch ])
 
     socket.on('challenge', (challenge) => {
         console.log(challenge)
@@ -76,7 +79,7 @@ export const Home = () => {
         
         if( notifications.length > 0 ) {
 
-            markNotificationAsRead( user.id )
+            dispatch(markNotificationAsRead( user.id, token, refreshToken ))
 
             notifications.map(notif => {
                 notif.status = 'read'
@@ -92,7 +95,7 @@ export const Home = () => {
 
     const handleNotifClick = ( gameId ) => {
         
-        deleteSelectedNotif( user.id, gameId )
+        dispatch(deleteSelectedNotif( user.id, gameId, token, refreshToken ))
 
         if ( notifications.length === 1 ) {
             setNotifications([])
@@ -131,10 +134,10 @@ export const Home = () => {
         
         }
         
-        deleteSelectedNotif( user.id, gameId )
+        dispatch(deleteSelectedNotif( user.id, gameId, token, refreshToken))
     }
 
-    if (notifications.length > 0 && badgeIcon === false) {
+    if (notifications?.length > 0 && badgeIcon === false) {
         notifications.forEach(notif => {
             if (notif.status === 'unread') {
                 setBadgeIcon(true)

@@ -6,7 +6,7 @@ export const RoundWinnerIndicator = ( { round, player } ) => {
         <div
             className={
                 `game__winnerRound ${round.winner === 'null' 
-                ? 'game__gray' : round.winner === player ? 'game__green' : 'game__red'}`
+                ? 'game__gray' : round.winner === player ? 'game__green' : round.winner === 'tie' ? 'game__black' : 'game__red'}`
             }
         ></div>
     )

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { Button } from 'react-bootstrap'
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { useParams } from 'react-router-dom'
 import { useNavigate } from 'react-router-dom'
 
@@ -17,10 +17,13 @@ import { RoundWinnerIndicator } from '../uiElements/RoundWinnerIndicator'
 export const Game = () => {
 
     const navigate = useNavigate()
+    const dispatch = useDispatch()
 
     const { gameId } = useParams()
 
     const user = useSelector(state => state.auth.user)
+    const token = useSelector(state => state.auth.token)
+    const refreshToken = useSelector(state => state.auth.refreshToken)
     
     const [ activeGame, setActiveGame ] = useState({})
 
@@ -36,14 +39,14 @@ export const Game = () => {
 
     useEffect(() => {
         
-        getGameRound( user.id, gameId, setRound, setActiveGame )
+        dispatch(getGameRound( user.id, gameId, setRound, setActiveGame, token, refreshToken ))
         document.body.classList.add('game-page')
 
         return () => {
             document.body.classList.remove('game-page')
         }
 
-    }, [ user.id, gameId, updateGame ])
+    }, [ user.id, gameId, updateGame, token, refreshToken, dispatch ])
 
     const pickHand = ( hand ) => {
 
@@ -52,13 +55,13 @@ export const Game = () => {
             handPicked: hand
         })
 
-        setActiveGamePlayerHand( user.id, activeGame.player2.id, activeGame.id, roundGame.round, hand, setRound, roundGame, setActiveGame, activeGame )
+        dispatch(setActiveGamePlayerHand( user.id, activeGame.player2.id, activeGame.id, roundGame.round, hand, setRound, roundGame, setActiveGame, activeGame, token, refreshToken))
 
     }
 
     const nextRound = ( ) => {
 
-        goToNextRound( user.id, activeGame.id, roundGame.round, setRound )
+        dispatch(goToNextRound( user.id, activeGame.id, roundGame.round, setRound, token, refreshToken ))
 
         if( roundGame.round < 3 ) {
             
@@ -76,7 +79,7 @@ export const Game = () => {
     const finishGame = ( ) => {
         console.log('finish game', user.id, activeGame.id)
 
-        finishGameAction( user.id, activeGame.id )
+        dispatch(finishGameAction( user.id, activeGame.id, token, refreshToken ))
 
         setTimeout(() => {
 
@@ -191,7 +194,7 @@ export const Game = () => {
                     </div>
 
                     <Button variant="danger" onClick={ () => navigate('/app/home') }>
-                        Leave Game
+                        Leave
                     </Button>
                 </header>
 
@@ -211,7 +214,7 @@ export const Game = () => {
                         }
                     </div>
 
-                    <div className="game__player1Choice">
+                    <div className={`game__player1Choice`}>
                         {
                             roundGame.player1hand === 'null' ?
                             <div className="game__player1ChoiceNull">
@@ -236,14 +239,23 @@ export const Game = () => {
                         
                     </div>
 
-                    
                 </div>
+
                 {
                     (roundGame.round !== 3 && (roundGame.player1hand !== 'null' && roundGame.player2hand !== 'null')) &&
-                    <div className="game__nextRound">
-                        <Button variant="primary" onClick={ () => nextRound() }>
-                            Next Round
-                        </Button>
+                    <div className="game__roundWinner">
+                        {
+                            roundGame.winner === 'player1' ?
+                            <h1>You Win this round!</h1>
+                            :
+                            <h1>You Lose this round!</h1>
+                        }
+
+                        <div className="game__nextRound">
+                            <Button variant="primary" onClick={ () => nextRound() }>
+                                Next Round
+                            </Button>
+                        </div>
                     </div>
                 }
             </div>

@@ -1,20 +1,24 @@
+import { Alert } from '@mui/material'
 import React, { useEffect, useState } from 'react'
 import { Button, FormControl, InputGroup } from 'react-bootstrap'
 import { useSelector } from 'react-redux'
 import { useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 
-import { getChallengers, searchUser } from '../../actions/users'
+import { clearError, getChallengers, searchUser } from '../../actions/users'
 import { ChallengeUser } from '../uiElements/ChallengeUser'
 
 export const Challenge = () => {
 
     const navigate = useNavigate()
     const dispatch = useDispatch()
-    
+
+    const error = useSelector(state => state.error)
     const onlineUsers = useSelector(state => state.users.onlineUsers)
     const user = useSelector(state => state.auth.user)
-
+    const token = useSelector(state => state.auth.token)
+    const refreshToken = useSelector(state => state.auth.refreshToken)
+    
     const [ userInput, setUserInput ] = useState('')
 
     const [ userSearched, setUserSearched ] = useState({
@@ -23,19 +27,20 @@ export const Challenge = () => {
     })
 
     const handleGoBack = () => {
+        dispatch( clearError() )
         navigate('/app/home')
     }
 
     useEffect(() => {
-        dispatch( getChallengers( user.id ) )
-    }, [dispatch, user.id])
+        dispatch( getChallengers( user.id, token, refreshToken ) )
+    }, [dispatch, user.id, token, refreshToken])
 
     const handleSearchChange = (e) => {
         setUserInput(e.target.value)
 
         if (e.target.value.length > 5) {
 
-            searchUser(e.target.value, setUserSearched)
+            dispatch(searchUser(e.target.value, setUserSearched, token, refreshToken))
 
         } else {
             setUserSearched({
@@ -53,12 +58,16 @@ export const Challenge = () => {
 
             <div className="challenge__infoDiv">
                 <div className="base__titleDiv">
-                    <h2 styles={
-                        {
-                            textAlign: 'center',
-                        }
-                    }>Challenge a player</h2>
+                    <h2 style={{textAlign: 'center'}}>Challenge a player</h2>
                 </div>
+
+                {
+                    error.message && (
+                        <Alert severity="error" className="challenge__error">
+                            { error.message }
+                        </Alert>
+                    )
+                }
 
                 <div className="challenge__subDiv">
                     <h2 className="challenge__subTitle">Search a friend</h2>

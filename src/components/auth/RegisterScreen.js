@@ -1,5 +1,7 @@
+import { Alert } from '@mui/material'
 import React from 'react'
 import { Button } from 'react-bootstrap'
+import { useSelector } from 'react-redux'
 import { useDispatch } from 'react-redux'
 import { Link } from 'react-router-dom'
 import { userRegister } from '../../actions/auth'
@@ -9,6 +11,7 @@ import { useForm } from '../../hooks/useForm'
 export const RegisterScreen = () => {
 
     const dispatch = useDispatch()
+    const error = useSelector(state => state.error)
 
     const [ formValues, handleInputChange ] = useForm({
         userName: '',
@@ -29,6 +32,15 @@ export const RegisterScreen = () => {
             <header className="container auth__header">
                 <h1>RPS</h1>
             </header>
+
+            {
+                error.message && (
+                    <Alert severity="error" className="auth__error">
+                        { error.message }
+                    </Alert>
+                )
+            }
+
 
             <form className="auth__form" onSubmit={ handleRegisterSubmit }>
                 <div className="auth__formInput">

@@ -10,7 +10,7 @@ export const PlayerChoiceResume = ({ round, player }) => {
 
         return (
             <div className={`game__round ${
-                round.winner !== player ? 'game__roundLost' : 'game__roundWon'
+                round.winner === player ? 'game__roundWon' : round.winner === 'tie' ? 'game__black' : 'game__roundLost'
             }`}>
                 <h3>Round {
                     round.round    
@@ -27,7 +27,7 @@ export const PlayerChoiceResume = ({ round, player }) => {
     } else {
         return (
             <div className={`game__round ${
-                round.winner !== player ? 'game__roundLost' : 'game__roundWon'
+                round.winner === player ? 'game__roundWon' : round.winner === 'tie' ? 'game__black' : 'game__roundLost'
             }`}>
                 <h3>Round {
                     round.round    

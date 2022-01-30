@@ -11,6 +11,9 @@
     flex-direction: row;
     align-content: center;
     align-items: center;
+    background-color: #f0f0f0;
+    padding: 20px;
+    border-radius: 20px;
 
     span {
 
@@ -18,7 +21,6 @@
         flex-direction: column;
         align-items: center;
         padding: 10px;
-        background-color: #3EC6FF;
         border-radius: 10px;
         color: #fff;
         
@@ -112,6 +114,18 @@
     }
 }
 
+.gameHistory__won {
+    background-color: #37BB5C;
+}
+
+.gameHistory__lost {
+    background-color: #FF4A4A;
+}
+
+.gameHistory__tie {
+    background-color: #3EC6FF;
+}
+
 @media (max-width: 576px) {
 
     .gameHistory__ul {
@@ -120,9 +134,7 @@
 
     .gameHistory__li {
         flex-direction: column;
-        padding: 20px;
-        background-color: rgb(221, 221, 221);
-        border-radius: 20px;
+        
     }
 
     .gameHistory__infoDiv {

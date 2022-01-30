@@ -1,7 +1,9 @@
 import React from 'react'
 import { Button } from 'react-bootstrap'
+import { useSelector } from 'react-redux'
 import { useDispatch } from 'react-redux'
 import { Link } from 'react-router-dom'
+import Alert from '@mui/material/Alert';
 
 import { userLogin } from '../../actions/auth'
 import { useForm } from '../../hooks/useForm'
@@ -9,6 +11,8 @@ import { useForm } from '../../hooks/useForm'
 export const LoginScreen = () => {
 
     const dispatch = useDispatch()
+
+    const error = useSelector(state => state.error)
 
     const [ formValues, handleInputChange ] = useForm({
         userName: '',
@@ -28,7 +32,16 @@ export const LoginScreen = () => {
                     <h1>RPS</h1>
                 </header>
 
+                {
+                    error.message && (
+                        <Alert severity="error" className="auth__error">
+                            { error.message }
+                        </Alert>
+                    )
+                }
+
                 <form className="auth__form" onSubmit={ handleLoginSubmit }>
+                    
                     <div className="auth__formInput">
                         <label htmlFor="username">Username</label>
                         <input className="form-control" type="text" id="username" name="userName" value={ formValues.userName } onChange={ handleInputChange }/>

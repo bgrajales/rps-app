@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { NavLink } from 'react-router-dom'
 import { Button } from 'react-bootstrap'
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { HiHome } from 'react-icons/hi'
 import { FcNext, FcPrevious } from 'react-icons/fc'
 
@@ -12,8 +12,12 @@ import { MutatingDots } from 'react-loader-spinner'
 
 export const GamesInProgress = () => {
 
-    const user = useSelector(state => state.auth.user)
+    const dispatch = useDispatch()
 
+    const user = useSelector(state => state.auth.user)
+    const token = useSelector(state => state.auth.token)
+    const refreshToken = useSelector(state => state.auth.refreshToken)
+    
     const [ loader, setLoader ] = useState(true)
 
     const [currentGames, setCurrentGames] = useState([]);
@@ -23,9 +27,9 @@ export const GamesInProgress = () => {
 
     useEffect( () => {
 
-        getActiveGames(user.id, setCurrentGames, page, setMaxPages, setLoader)
+        dispatch(getActiveGames(user.id, setCurrentGames, page, setMaxPages, setLoader, token, refreshToken))
 
-    }, [user.id, page])
+    }, [user.id, page, token, refreshToken, dispatch])
 
     const nextPage = () => {
 
@@ -89,7 +93,7 @@ export const GamesInProgress = () => {
                         <FcNext onClick={ nextPage }/>
                     </div>
                     
-                    <ul>
+                    <ul className="container">
                         {
                             currentGames.map( game => (
                                 <GameDiv key={ game.id } game={ game } />

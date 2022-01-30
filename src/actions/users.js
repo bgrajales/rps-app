@@ -4,16 +4,18 @@ import axios from 'axios'
 import { types } from "../types/types"
 
 import socketIOClient from 'socket.io-client'
+import { refreshTokenAction } from './auth';
 
-const ENDPOINT = `${process.env.REACT_APP_API_PROTOCOL}://${process.env.REACT_APP_API_HOST}`;
+const ENDPOINT = `${process.env.REACT_APP_API_PROTOCOL}://${process.env.REACT_APP_API_HOST}:${process.env.REACT_APP_API_PORT}`;
 export const socket = socketIOClient(ENDPOINT);
 
-export const getChallengers = ( userId ) => {
+export const getChallengers = ( userId, token, refreshToken ) => {
         return (dispatch) => {
             const headers = {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'authorization': token
             }
-    
+
             axios.get(`${apiUrl('getChallengers')}?userId=${userId}`,{
                 headers: headers
             })
@@ -23,40 +25,56 @@ export const getChallengers = ( userId ) => {
             })
             .catch( err => {
                 console.log(err)
+
+                if( err.response.status === 403) {
+                    dispatch( refreshTokenAction(refreshToken) )
+                }
             })
         }
-}
+} // Refresh token done
 
-export const getStats = ( userId, setStats ) => {
-
-    const headers = {
-        'Content-Type': 'application/json'
-    }
-
-    axios.get((`${apiUrl('getStats')}?userId=${userId}`), {
-        headers: headers
-    }).then( ({ data }) => {
-        setStats({
-            gamesPlayed: data.gamesPlayed,
-            gamesWon: data.gamesWon,
-            winningStreak: data.winningStreak,
-        })
-    }).catch( err => {
-        console.log(err)
-    })
-
-}
-
-export const challengeUser = ( userId, challengedId, userName, challengedName, navigate ) => {
-
+export const getStats = ( userId, setStats, token, refreshToken ) => {
     return (dispatch) => {
-        console.log(userId, challengedId)
-        
         const headers = {
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
+            'authorization': token
         }
 
-        axios.post(`${apiUrl('challengeUser')}?userId=${userId}&challengedId=${challengedId}&userName=${userName}&challengedName=${challengedName}`,{
+        axios.get((`${apiUrl('getStats')}?userId=${userId}`), {
+            headers: headers
+        }).then( ({ data }) => {
+            setStats({
+                gamesPlayed: data.gamesPlayed,
+                gamesWon: data.gamesWon,
+                winningStreak: data.winningStreak,
+            })
+        }).catch( err => {
+            console.log(err)
+
+            if (err.response.status === 403) {
+                dispatch(refreshTokenAction( refreshToken ))
+            }
+        })
+    }
+} // Refresh token done
+
+export const challengeUser = ( userId, challengedId, userName, challengedName, navigate, token, refreshToken ) => {
+
+    return (dispatch) => {
+        
+        dispatch( clearError() )
+
+        const headers = {
+            'Content-Type': 'application/json',
+            'authorization': token
+        }
+
+        axios.post(`${apiUrl('challengeUser')}`,{
+            userId,
+            challengedId,
+            userName,
+            challengedName
+        },{
             headers: headers
         })
         .then( ({ data }) => {
@@ -78,135 +96,297 @@ export const challengeUser = ( userId, challengedId, userName, challengedName, n
             // dispatch( setChallenge(data.challenge) )
         })
         .catch( err => {
+            dispatch( setError(err.response.data.message) )
+
+            if (err.response.status === 403) {
+                dispatch(refreshTokenAction( refreshToken ))
+            }
+        })
+
+    }
+
+
+} // Refresh Token done
+
+export const getActiveGames = ( userId, setCurrentGames, page, setMaxPages, setLoader, token, refreshToken ) => {
+    return (dispatch) => {
+        const headers = {
+            'Content-Type': 'application/json',
+            'authorization': token
+        }
+
+        axios.get(`${apiUrl('getActiveGames')}?userId=${userId}&page=${page}`, {
+            headers: headers
+        }).then( ({ data }) => {
+            console.log(data)
+            setCurrentGames(data.games)
+            setMaxPages(data.maxPages)
+            setLoader(false)
+        }).catch( err => {
             console.log(err)
+
+            if (err.response.status === 403) {
+                dispatch(refreshTokenAction( refreshToken ))
+            }
+
         })
-
     }
+} // Refresh Token done
 
-
-}
-
-export const getActiveGames = ( userId, setCurrentGames, page, setMaxPages, setLoader ) => {
-
-    const headers = {
-        'Content-Type': 'application/json'
-    }
-
-    axios.get(`${apiUrl('getActiveGames')}?userId=${userId}&page=${page}`, {
-        headers: headers
-    }).then( ({ data }) => {
-        console.log(data)
-        setCurrentGames(data.games)
-        setMaxPages(data.maxPages)
-        setLoader(false)
-    }).catch( err => {
-        console.log(err)
-    })
-
-
-}
-
-export const getGameRound = ( userId, gameId, setRound, setActiveGame ) => {
+export const getGameRound = ( userId, gameId, setRound, setActiveGame, token, refreshToken ) => {
     
-    console.log('getting round', 
-        userId,
-        gameId)
-    axios.get(`${apiUrl('getActiveGameById')}?userId=${userId}&gameId=${gameId}`)
-    .then( ({ data }) => {
-        console.log(data)
-        setActiveGame(data)
+    return (dispatch) => {
+        const headers = {
+            'Content-Type': 'application/json',
+            'authorization': token
+        }
         
-        const activeGame = data
-
-        setRound({
-            round: activeGame.currentRound,
-            player1hand: activeGame.rounds[activeGame.currentRound-1].player1hand,
-            player2hand: activeGame.rounds[activeGame.currentRound-1].player2hand,
-            winner: activeGame.rounds[activeGame.currentRound-1].winner
+        axios.get(`${apiUrl('getActiveGameById')}?userId=${userId}&gameId=${gameId}`, {
+            headers: headers
         })
+        .then( ({ data }) => {
+            console.log(data)
+            setActiveGame(data)
+            
+            const activeGame = data
 
-    })
-    .catch( err => {
-        console.log(err)
-    })
+            setRound({
+                round: activeGame.currentRound,
+                player1hand: activeGame.rounds[activeGame.currentRound-1].player1hand,
+                player2hand: activeGame.rounds[activeGame.currentRound-1].player2hand,
+                winner: activeGame.rounds[activeGame.currentRound-1].winner
+            })
 
-}
+        })
+        .catch( err => {
+            console.log(err)
 
-export const setActiveGamePlayerHand = ( userId, challengedId, gameId, round, hand, setRound, roundGame, setActiveGame, activeGame ) => {
+            if (err.response.status === 403) {
+                dispatch(refreshTokenAction( refreshToken ))
+            }
+        })
+    } // Refresh Token done
 
-    const headers = {
-        'Content-Type': 'application/json'
-    }
+} // Refresh Token done
 
-    axios.post(`${apiUrl('setActiveGamePlayerHand')}?userId=${userId}&challengedId=${challengedId}&gameId=${gameId}&round=${round}&hand=${hand}`, {
-        headers: headers
-    }).then( ({ data }) => {
-        console.log(data)
+export const setActiveGamePlayerHand = ( userId, challengedId, gameId, round, hand, setRound, roundGame, setActiveGame, activeGame, token, refreshToken ) => {
 
-        const newRound = {
-            round: round,
-            player1hand: hand,
-            player2hand: roundGame.player2hand,
-            winner: data.winner            
-        }
-    
-        setRound(newRound)
+    return (dispatch) => {
 
-        const newActiveGame = {
-            ...activeGame,
-            rounds: [
-                ...activeGame.rounds.slice(0, round-1),
-                newRound,
-                ...activeGame.rounds.slice(round)
-            ]
+        const headers = {
+            'Content-Type': 'application/json',
+            'authorization': token
         }
 
-        setActiveGame(newActiveGame)
-    
-    }).catch( err => {
-        console.log(err)
-    })
+        axios.post(`${apiUrl('setActiveGamePlayerHand')}`,{
+            userId,
+            challengedId,
+            gameId,
+            round,
+            hand
+        },{
+            headers: headers
+        }).then( ({ data }) => {
+            console.log(data)
 
-}
+            const newRound = {
+                round: round,
+                player1hand: hand,
+                player2hand: roundGame.player2hand,
+                winner: data.winner            
+            }
+        
+            setRound(newRound)
 
-export const goToNextRound = ( userId, gameId, currentRound, setRound ) => {
+            const newActiveGame = {
+                ...activeGame,
+                rounds: [
+                    ...activeGame.rounds.slice(0, round-1),
+                    newRound,
+                    ...activeGame.rounds.slice(round)
+                ]
+            }
 
-    const headers = {
-        'Content-Type': 'application/json'
-    }
+            setActiveGame(newActiveGame)
+        
+        }).catch( err => {
+            console.log(err)
 
-    axios.post( `${apiUrl('nextRound')}?userId=${userId}&gameId=${gameId}&currentRound=${currentRound}`, {
-        headers: headers
-    }).then( ({ data }) => {
-        console.log(data)
-        setRound({
-            round: currentRound+1,
-            player1hand: 'null',
-            player2hand: 'null',
-            winner: 'null'
+            if (err.response.status === 403) {
+                dispatch(refreshTokenAction( refreshToken ))
+            }
+
         })
-    }).catch( err => {
-        console.log(err)
-    })
-
-}
-
-export const finishGameAction = ( userId, gameId ) => {
-
-    const headers = {
-        'Content-Type': 'application/json'
     }
 
-    axios.post( `${apiUrl('finishGame')}?userId=${userId}&gameId=${gameId}`, {
-        headers: headers
-    }).then( ({ data }) => {
-        console.log(data)
-    }).catch( err => {
-        console.log(err)
-    })
+} // Refresh Token done
 
+export const goToNextRound = ( userId, gameId, currentRound, setRound, token, refreshToken ) => {
 
-}
+    return (dispatch) => {
+        const headers = {
+            'Content-Type': 'application/json',
+            'authorization': token
+        }
+
+        axios.get( `${apiUrl('nextRound')}?userId=${userId}&gameId=${gameId}&currentRound=${currentRound}`, {
+            headers: headers
+        }).then( ({ data }) => {
+            console.log(data)
+            setRound({
+                round: currentRound+1,
+                player1hand: 'null',
+                player2hand: 'null',
+                winner: 'null'
+            })
+        }).catch( err => {
+            console.log(err)
+
+            if (err.response.status === 403) {
+                dispatch(refreshTokenAction( refreshToken ))
+            }
+
+        })
+    }
+} // Refresh Token done
+
+export const finishGameAction = ( userId, gameId, token, refreshToken) => {
+
+    return (dispatch) => {
+        const headers = {
+            'Content-Type': 'application/json',
+            'authorization': token
+        }
+
+        axios.post( `${apiUrl('finishGame')}`, {
+            userId,
+            gameId
+        }, {
+            headers: headers
+        }).then( ({ data }) => {
+            console.log(data)
+        }).catch( err => {
+            console.log(err)
+
+            if (err.response.status === 403) {
+                dispatch(refreshTokenAction( refreshToken ))
+            }
+        })
+    }
+
+} // Refresh Token done
+
+export const getGamesHistory = ( userId, setGames, page, setMaxPage, setLoader, token, refreshToken) => {
+
+    return (dispatch) => {
+        const headers = {
+            'Content-Type': 'application/json',
+            'authorization': token
+        }
+
+        axios.get((`${apiUrl('getGamesHistory')}?userId=${userId}&page=${page}`), {
+            headers: headers
+        }).then( ({ data }) => {
+
+            setGames(data.games)
+            setMaxPage(data.maxPages)
+            setLoader(false)
+            
+        }).catch( err => {
+            console.log(err)
+            if (err.response.status === 403) {
+                dispatch(refreshTokenAction( refreshToken ))
+            }
+        })
+    }
+
+} // Refresh Token done
+
+export const markNotificationAsRead = ( userId, token, refreshToken ) => {
+
+    return (dispatch) => {
+        const headers = {
+            'Content-Type': 'application/json',
+            'authorization': token
+        }
+
+        axios.post(`${apiUrl('markNotificationAsRead')}`, {
+            userId: userId,
+        },{
+            headers: headers
+        }).then( ( { data } ) => {
+
+            console.log(data)
+            
+        }).catch( err => {
+            console.log(err)
+            if (err.response.status === 403) {
+                dispatch(refreshTokenAction( refreshToken ))
+            }
+        })
+    }
+    
+} // Refresh Token done
+
+export const deleteSelectedNotif = ( userId, gameId, token, refreshToken) => {
+
+    return (dispatch) => {
+        const headers = {
+            'Content-Type': 'application/json',
+            'authorization': token
+        }
+
+        axios.post(`${apiUrl('deleteSelectedNotif')}`, {
+            userId: userId,
+            gameId: gameId,
+        },{
+            headers: headers    
+        }).then( ( { data } ) => {
+
+            console.log(data)
+
+        }).catch( err => {
+            console.log(err)
+
+            if (err.response.status === 403) {
+                dispatch(refreshTokenAction( refreshToken ))
+            }
+        })
+    }
+
+} // Refresh Token done
+
+export const searchUser = ( userName, setUserSearched, token, refreshToken ) => {
+
+    return (dispatch) => {
+        const headers = {
+            'Content-Type': 'application/json',
+            'authorization': token,
+        }
+
+        axios.get(`${apiUrl('searchUser')}?userName=${userName}`, {
+            headers: headers
+        }).then( ( { data } ) => {
+
+            console.log(data)
+            
+            if( data.userName ) {
+                setUserSearched({
+                    userName: data.userName,
+                    userId: data.userId
+                })
+            }  
+
+        }).catch( err => {
+            console.log(err)
+
+            if (err.response.status === 403) {
+                dispatch(refreshTokenAction( refreshToken ))
+            }
+        })
+    }
+
+} 
 
 export const setOnlineUsers = ( users ) => {
     return (dispatch) => {
@@ -217,85 +397,11 @@ export const setOnlineUsers = ( users ) => {
     }
 }
 
-export const getGamesHistory = ( userId, setGames, page, setMaxPage, setLoader ) => {
+export const setError = ( message ) => ({
+    type: types.ERROR,
+    payload: message
+})
 
-    const headers = {
-        'Content-Type': 'application/json'
-    }
-
-    axios.get((`${apiUrl('getGamesHistory')}?userId=${userId}&page=${page}`), {
-        headers: headers
-    }).then( ({ data }) => {
-
-        setGames(data.games)
-        setMaxPage(data.maxPages)
-        setLoader(false)
-        
-    }).catch( err => {
-        console.log(err)
-    })
-
-}
-
-export const markNotificationAsRead = ( userId ) => {
-
-    const headers = {
-            'Content-Type': 'application/json'
-        }
-    
-        axios.post(`${apiUrl('markNotificationAsRead')}?userId=${userId}`, {
-            headers: headers
-        }).then( ( { data } ) => {
-
-            console.log(data)
-            
-        }).catch( err => {
-            console.log(err)
-        })
-    
-}
-
-export const deleteSelectedNotif = ( userId, gameId ) => {
-
-    const headers = {
-        'Content-Type': 'application/json'
-    }
-
-    axios.post(`${apiUrl('deleteSelectedNotif')}?userId=${userId}&gameId=${gameId}`, {
-        headers: headers    
-    }).then( ( { data } ) => {
-
-        console.log(data)
-
-    }).catch( err => {
-        console.log(err)
-    })
-
-}
-
-export const searchUser = ( userName, setUserSearched ) => {
-
-
-    const headers = {
-        'Content-Type': 'application/json'
-    }
-
-    axios.post(`${apiUrl('searchUser')}?userName=${userName}`, {
-        headers: headers
-    }).then( ( { data } ) => {
-
-        console.log(data)
-        
-        if( data.userName ) {
-            setUserSearched({
-                userName: data.userName,
-                userId: data.userId
-            })
-        }  
-
-    }).catch( err => {
-        console.log(err)
-    })
-
-
-}
+export const clearError = () => ({
+    type: types.CLEAR_ERROR
+})

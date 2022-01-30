@@ -6,11 +6,35 @@ import { socket } from './users'
 import { finishLoading } from './ui'
 // import { startLoading } from "./ui"
 
+export const refreshTokenAction = ( refreshToken ) => {
+    return (dispatch) => {
+        console.log('refreshing')
+
+        const headers = {
+            'Content-Type': 'application/json',
+        }
+
+        const body = {
+            refreshToken: refreshToken,
+        }
+
+        axios.post((apiUrl('refreshToken')), JSON.stringify(body), {
+            headers,
+        })
+        .then( ({ data }) => {
+            dispatch( login( data.user, data.token, data.refreshToken ) )
+        }).catch( err => {
+            console.log(err)
+            dispatch( logout() )
+        })
+    }
+}
+
 export const userLogin = ( userName, password ) => {
     return (dispatch) => {
-        console.log(userName, password)
 
-        // dispatch( startLoading() )
+        dispatch( clearError() )
+
         const headers = {
             'Content-Type': 'application/json'
         }
@@ -32,8 +56,9 @@ export const userLogin = ( userName, password ) => {
             
         })
         .catch( err => {
-            console.log(err)
-            // Swal.fire('Error', err.message, 'error')
+            console.log(err.response.data.message)
+
+            dispatch( setError( err.response.data.message ) )
         })
     }
 }
@@ -43,6 +68,7 @@ export const userRegister = ( userName, password, repeatPassword ) => {
     return (dispatch) => {
         console.log(userName, password, repeatPassword)
 
+        dispatch( clearError() )
         // dispatch( startLoading() )
         const headers = {
             'Content-Type': 'application/json'
@@ -66,8 +92,12 @@ export const userRegister = ( userName, password, repeatPassword ) => {
             
         })
         .catch( err => {
-            console.log(err)
-            // Swal.fire('Error', err.message, 'error')
+
+            if ( err.response.data.message === '"repeatPassword" must be [ref:password]') {
+                dispatch( setError('Passwords don\'t match') )
+            } else {
+                dispatch( setError( err.response.data.message ) )
+            }
         })
     }
     
@@ -109,11 +139,14 @@ export const userAlreadyLoggedIn = ( refreshToken ) => {
             headers: headers
         })
         .then( ({ data }) => {
-            dispatch( login( data.user, data.token, refreshToken ) )
+            console.log(data)
+            dispatch( login( data.user, data.token, data.refreshToken ) )
             dispatch( finishLoading() )
             socket.emit('login', data.user.id)
         })
         .catch( err => {
+            dispatch( logout() )
+            dispatch( finishLoading() )
             console.log(err)
         })
     }
@@ -131,4 +164,13 @@ export const login = ( user, token, refreshToken ) => ({
 
 export const logout = () => ({
     type: types.LOGOUT
+})
+
+export const setError = ( message ) => ({
+    type: types.ERROR,
+    payload: message
+})
+
+export const clearError = () => ({
+    type: types.CLEAR_ERROR
 })

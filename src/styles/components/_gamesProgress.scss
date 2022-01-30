@@ -2,6 +2,9 @@
     list-style: none;
     text-align: center;
     margin-bottom: 30px;
+    background-color: #f0f0f0;
+    padding: 20px;
+    border-radius: 20px;
 }
 
 .gamesProgress__roundsDiv {
@@ -89,12 +92,9 @@
 
 @media (max-width: 576px) {
 
-    ul {
-        padding-left: 0;
-    }
-
-    .gamesProgress__roundsDiv {
-        display: none;
+    .gamesProgress__liDiv {
+        flex-direction: column;
+        gap: 20px;
     }
 
 }

@@ -38,3 +38,11 @@
     bottom: -90px;
     width: 100%;
 }
+
+.challenge__error {
+    position: absolute;
+    top: 10%;
+    width: 90%;
+    left: 50%;
+    transform: translate(-50%);
+}
