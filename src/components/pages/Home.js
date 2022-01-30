@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { Button, Dropdown } from 'react-bootstrap'
 import { useDispatch, useSelector } from 'react-redux'
-import { NavLink, Link } from 'react-router-dom'
+import { NavLink } from 'react-router-dom'
 import { useNavigate } from 'react-router-dom'
 
 import { BsFillBellFill } from 'react-icons/bs'
@@ -9,11 +9,16 @@ import { FaTrash } from 'react-icons/fa'
 import { FiMoreHorizontal } from 'react-icons/fi'
 import { HiHome } from 'react-icons/hi'
 
+import styled, { keyframes } from 'styled-components'
+import { fadeInDown } from 'react-animations'
+
 import { userLogout } from '../../actions/auth'
 import { deleteSelectedNotif, getStats, markNotificationAsRead, socket } from '../../actions/users'
 import { GamesPlayed } from '../uiElements/GamesPlayed'
 import { GamesWon } from '../uiElements/GamesWon'
 import { WinningStreak } from '../uiElements/WinningStreak'
+
+const FadeInDown = styled.div`animation: 1s ${keyframes`${fadeInDown}`}`
 
 export const Home = () => {
 
@@ -28,6 +33,7 @@ export const Home = () => {
     const [ badgeIcon, setBadgeIcon ] = useState(false)
 
     const [ notifications, setNotifications ] = useState([])
+    const [ loading, setLoading ] = useState(true)
 
     const handleLogout = () => {
         socket.emit('logout', user.id)
@@ -44,7 +50,7 @@ export const Home = () => {
 
     useEffect(() => {
 
-        dispatch(getStats( user.id, setStats, token, refreshToken ))
+        dispatch(getStats( user.id, setStats, token, refreshToken, setLoading ))
 
         setNotifications( userNotification )
 
@@ -208,27 +214,26 @@ export const Home = () => {
             </header>
 
             <div className="container home__stats">
-                <div className="base__titleDiv">
-                    <h2>{ user.userName }</h2>
-                </div>
-
+                <FadeInDown>
+                    <div className="base__titleDiv">
+                        <h2>{ user.userName }</h2>
+                    </div>
+                </FadeInDown>
                 <div className="home__statsDiv">
-                    <GamesPlayed gamesPlayed={ stats.gamesPlayed }/>
-                    <GamesWon gamesWon={ stats.gamesWon }/>
+                    <GamesPlayed gamesPlayed={ stats.gamesPlayed } loading={ loading }/>
+                    <GamesWon gamesWon={ stats.gamesWon } loading={ loading }/>
                 </div>
 
                 <WinningStreak winningStreak={ stats.winningStreak }/>
             
-                <Link to="/app/challenge">
-                    <div className="home__btnDiv container">
-                        <Button variant="primary" size="lg">
-                            Start new game
-                        </Button>
-                        <Button variant="danger" onClick={ handleLogout }>
-                            Logout    
-                        </Button>{' '}
-                    </div>
-                </Link>
+                <div className="home__btnDiv container">
+                    <Button variant="primary" size="lg" onClick={ () => navigate('/app/challenge')}>
+                        Start new game
+                    </Button>
+                    <Button variant="danger" onClick={ handleLogout }>
+                        Logout    
+                    </Button>{' '}
+                </div>
             </div>
         </div>
     )

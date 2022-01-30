@@ -6,7 +6,7 @@ import { types } from "../types/types"
 import socketIOClient from 'socket.io-client'
 import { refreshTokenAction } from './auth';
 
-const ENDPOINT = `${process.env.REACT_APP_API_PROTOCOL}://${process.env.REACT_APP_API_HOST}:${process.env.REACT_APP_API_PORT}`;
+const ENDPOINT = `${process.env.REACT_APP_API_PROTOCOL}://${process.env.REACT_APP_API_HOST}`;
 export const socket = socketIOClient(ENDPOINT);
 
 export const getChallengers = ( userId, token, refreshToken ) => {
@@ -33,7 +33,7 @@ export const getChallengers = ( userId, token, refreshToken ) => {
         }
 } // Refresh token done
 
-export const getStats = ( userId, setStats, token, refreshToken ) => {
+export const getStats = ( userId, setStats, token, refreshToken, setLoading ) => {
     return (dispatch) => {
         const headers = {
             'Content-Type': 'application/json',
@@ -48,9 +48,10 @@ export const getStats = ( userId, setStats, token, refreshToken ) => {
                 gamesWon: data.gamesWon,
                 winningStreak: data.winningStreak,
             })
+            setLoading(false)
         }).catch( err => {
             console.log(err)
-
+            setLoading(false)
             if (err.response.status === 403) {
                 dispatch(refreshTokenAction( refreshToken ))
             }
@@ -133,7 +134,7 @@ export const getActiveGames = ( userId, setCurrentGames, page, setMaxPages, setL
     }
 } // Refresh Token done
 
-export const getGameRound = ( userId, gameId, setRound, setActiveGame, token, refreshToken ) => {
+export const getGameRound = ( userId, gameId, setRound, setActiveGame, token, refreshToken, setLoader ) => {
     
     return (dispatch) => {
         const headers = {
@@ -157,10 +158,12 @@ export const getGameRound = ( userId, gameId, setRound, setActiveGame, token, re
                 winner: activeGame.rounds[activeGame.currentRound-1].winner
             })
 
+            setLoader(false)
+
         })
         .catch( err => {
             console.log(err)
-
+            setLoader(false)
             if (err.response.status === 403) {
                 dispatch(refreshTokenAction( refreshToken ))
             }

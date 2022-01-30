@@ -3,6 +3,10 @@ import { Button } from 'react-bootstrap'
 import { useDispatch, useSelector } from 'react-redux'
 import { useParams } from 'react-router-dom'
 import { useNavigate } from 'react-router-dom'
+import { Oval } from 'react-loader-spinner'
+
+import styled, { keyframes } from 'styled-components'
+import { bounceInDown, bounceInUp, fadeInRight } from 'react-animations'
 
 import { finishGameAction, getGameRound, goToNextRound, setActiveGamePlayerHand, socket } from '../../actions/users'
 import { ReactComponent as Paper } from '../../assets/images/paper.svg'
@@ -13,6 +17,10 @@ import { Player1Choice } from '../uiElements/Player1Choice'
 import { Player2Choice } from '../uiElements/Player2Choice'
 import { PlayerChoiceResume } from '../uiElements/PlayerChoiceResume'
 import { RoundWinnerIndicator } from '../uiElements/RoundWinnerIndicator'
+
+const BounceInDown = styled.div`animation: 1s ${keyframes`${bounceInDown}`}`
+const BounceInUp = styled.div`animation: 1s ${keyframes`${bounceInUp}`}`
+const FadeInRight = styled.div`animation: 1s ${keyframes`${fadeInRight}`}`
 
 export const Game = () => {
 
@@ -29,6 +37,7 @@ export const Game = () => {
 
     const [ currentRound, setCurrentRound ] = useState(1)
     const [ updateGame, setUpdateGame ] = useState(false)
+    const [ loader, setLoader ] = useState(true)
 
     const [roundGame, setRound] = useState({
         round: 'null',
@@ -39,7 +48,7 @@ export const Game = () => {
 
     useEffect(() => {
         
-        dispatch(getGameRound( user.id, gameId, setRound, setActiveGame, token, refreshToken ))
+        dispatch(getGameRound( user.id, gameId, setRound, setActiveGame, token, refreshToken, setLoader ))
         document.body.classList.add('game-page')
 
         return () => {
@@ -148,6 +157,7 @@ export const Game = () => {
                         }
                     </div>
                     
+                   
                     <div class="game__div2">
                         {
                             activeGame.rounds.map( ( round, index ) => {
@@ -161,6 +171,7 @@ export const Game = () => {
                             })
                         }
                     </div>
+                    
                 </div>
 
                 <Button onClick={ finishGame } className="container">
@@ -172,78 +183,89 @@ export const Game = () => {
 
         return (
             <div className="game__div">
-                <header>
-                    <div>
-                        <h2>Round {roundGame.round}/3</h2>
-                        <div className="game__nameDiv">
-                            <h4>{ user.userName }</h4>
-                            {
-                                activeGame.rounds?.map(round =>{
-                                    return <RoundWinnerIndicator key={ round.round } round={ round } player={ 'player1' } />
-                                })
-                            }
+                <BounceInDown>
+                    <header>
+                        <div>
+                            <h2>Round {roundGame.round}/3</h2>
+                            <div className="game__nameDiv">
+                                <h4>{ user.userName }</h4>
+                                {
+                                    activeGame.rounds?.map(round =>{
+                                        return <RoundWinnerIndicator key={ round.round } round={ round } player={ 'player1' } />
+                                    })
+                                }
+                            </div>
+                            <div className="game__nameDiv">
+                                <h4> { activeGame.player2?.userName } </h4>
+                                {
+                                    activeGame.rounds?.map(round =>{
+                                        return <RoundWinnerIndicator key={ round.round } round={ round } player={ 'player2' } />
+                                    })
+                                }
+                            </div>
                         </div>
-                        <div className="game__nameDiv">
-                            <h4> { activeGame.player2?.userName } </h4>
-                            {
-                                activeGame.rounds?.map(round =>{
-                                    return <RoundWinnerIndicator key={ round.round } round={ round } player={ 'player2' } />
-                                })
-                            }
-                        </div>
-                    </div>
 
-                    <Button variant="danger" onClick={ () => navigate('/app/home') }>
-                        Leave
-                    </Button>
-                </header>
-
+                        <Button variant="danger" onClick={ () => navigate('/app/home') }>
+                            Leave
+                        </Button>
+                    </header>
+                </BounceInDown>
                 <div className="game__handsPickDiv">
-                    <div className="game__player2Choice">
-                        {
-                            roundGame.player2hand === 'null' || roundGame.player1hand === 'null' ?
-                            <div className="game__player2ChoiceNull">
-                                <h1>{
-                                    roundGame.player2hand === 'null' ? 'Waiting for Player 2' : 'Player 2 has picked!'
-                                }</h1>
-                            </div>
-                            :
-                            <div className="game__player2ChoicePickand">
-                                <Player2Choice hand={ roundGame.player2hand } />
-                            </div>
-                        }
-                    </div>
+                    <BounceInDown className="game__player2Choice">
+                            {
+                                roundGame.player2hand === 'null' || roundGame.player1hand === 'null' ?
+                                <div className="game__player2ChoiceNull">
+                                    <h1>{
+                                        roundGame.player2hand === 'null' ? 'Waiting for Player 2' : 'Player 2 has picked!'
+                                    }</h1>
+                                </div>
+                                :
+                                <div className="game__player2ChoicePickand">
+                                    <Player2Choice hand={ roundGame.player2hand } />
+                                </div>
+                            }
+                    </BounceInDown>
 
-                    <div className={`game__player1Choice`}>
-                        {
-                            roundGame.player1hand === 'null' ?
-                            <div className="game__player1ChoiceNull">
-                                <h1>Pick your hand!</h1>
-                                <div className="game__player1ChoiceHand">
-                                    <div className="game__paperImage">
-                                        <Paper className="game__hand" onClick={ () => pickHand('p') }/>
-                                    </div>
-                                    <div className="game__rockImage">
-                                        <Rock className="game__hand" onClick={ () => pickHand('r') }/>
-                                    </div>
-                                    <div className="game__scissorsImage">
-                                        <Scissors className="game__hand" onClick={ () => pickHand('s') }/>
+                    <BounceInUp className="game__player1Choice"> 
+                   {
+                       loader ? 
+                            <Oval
+                                strokeWidth={5}
+                                color='#000'
+                                secondaryColor="#656565"
+                            />
+                          :
+                          <>
+                            {
+                                roundGame.player1hand === 'null' ?
+                                <div className="game__player1ChoiceNull">
+                                    <h1>Pick your hand!</h1>
+                                    <div className="game__player1ChoiceHand">
+                                        <div className="game__paperImage">
+                                            <Paper className="game__hand" onClick={ () => pickHand('p') }/>
+                                        </div>
+                                        <div className="game__rockImage">
+                                            <Rock className="game__hand" onClick={ () => pickHand('r') }/>
+                                        </div>
+                                        <div className="game__scissorsImage">
+                                            <Scissors className="game__hand" onClick={ () => pickHand('s') }/>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                            :
-                            <div className="game__player1ChoicePick">
-                                <Player1Choice hand={roundGame.player1hand} />
-                            </div>
-                        }
-                        
-                    </div>
-
+                                :
+                                <div className="game__player1ChoicePick">
+                                    <Player1Choice hand={roundGame.player1hand} />
+                                </div>
+                            }
+                            </>
+                            
+                   }
+                    </BounceInUp>
                 </div>
 
                 {
                     (roundGame.round !== 3 && (roundGame.player1hand !== 'null' && roundGame.player2hand !== 'null')) &&
-                    <div className="game__roundWinner">
+                    <FadeInRight className="game__roundWinner">
                         {
                             roundGame.winner === 'player1' ?
                             <h1>You Win this round!</h1>
@@ -256,7 +278,7 @@ export const Game = () => {
                                 Next Round
                             </Button>
                         </div>
-                    </div>
+                    </FadeInRight>
                 }
             </div>
         )

@@ -1,15 +1,25 @@
 import React from 'react'
+import { Oval } from 'react-loader-spinner'
 
-export const GamesWon = ({ gamesWon }) => {
+export const GamesWon = ({ gamesWon, loading }) => {
 
     return (
-        <div>
+        <div className="shadow">
             <p>Won</p>
-            <h3>
-                {
-                   gamesWon
-                }
-            </h3>
+            {
+                loading ?
+                <Oval
+                    color="#000"
+                    secondaryColor="#656565"
+                    strokeWidth={6}
+                />
+                :
+                <h3>
+                    {
+                        gamesWon
+                    }
+                </h3>
+            }
         </div>
     )
 }

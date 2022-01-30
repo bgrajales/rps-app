@@ -50,12 +50,6 @@ export const GameDiv = ({ game }) => {
                                 game.rounds[0].player1hand === 's' ? <Scissors /> :
                                 ''
                                 }</>
-                                <p>vs</p>
-                                <>{ game.rounds[0].player2hand === 'r' ? <Rock /> :
-                                game.rounds[0].player2hand === 'p' ? <Paper /> :
-                                game.rounds[0].player2hand === 's' ? <Scissors /> :
-                                ''
-                                }</>
                             </div>    
 
                         }
@@ -71,12 +65,6 @@ export const GameDiv = ({ game }) => {
                                 game.rounds[1].player1hand === 's' ? <Scissors /> :
                                 ''
                                 }</>
-                                <p>vs</p>
-                                <>{ game.rounds[1].player2hand === 'r' ? <Rock /> :
-                                game.rounds[1].player2hand === 'p' ? <Paper /> :
-                                game.rounds[1].player2hand === 's' ? <Scissors /> :
-                                ''
-                                }</>
                             </div>                           }
                     </div>
                     <div className="gamesProgress__round">
@@ -88,12 +76,6 @@ export const GameDiv = ({ game }) => {
                                 <>{ game.rounds[2].player1hand === 'r' ? <Rock /> :
                                 game.rounds[2].player1hand === 'p' ? <Paper /> :
                                 game.rounds[2].player1hand === 's' ? <Scissors /> :
-                                ''
-                                }</>
-                                <p>vs</p>
-                                <>{ game.rounds[2].player2hand === 'r' ? <Rock /> :
-                                game.rounds[2].player2hand === 'p' ? <Paper /> :
-                                game.rounds[2].player2hand === 's' ? <Scissors /> :
                                 ''
                                 }</>
                             </div>   
