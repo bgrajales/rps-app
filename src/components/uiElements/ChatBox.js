@@ -1,6 +1,7 @@
 import React from 'react';
 import { InputGroup, FormControl, Button } from 'react-bootstrap';
 import { IoMdSend } from 'react-icons/io';
+import ScrollToBottom from 'react-scroll-to-bottom';
 
 import { useForm } from '../../hooks/useForm'
 import { socket } from '../../actions/users'
@@ -16,21 +17,24 @@ export const ChatBox = ({ gameId, userName, show, chatMessages, userId, challeng
 
         const message = formValues.message;
 
-        socket.emit('messageSent', {
-            gameId,
-            userId,
-            challengedId,
-            message,
-        })
-
-        setChatMessages([
-            ...chatMessages,
-            {
-                sender: 'player1',
+        if( message.length > 0 ) {
+            socket.emit('messageSent', {
+                gameId,
+                userId,
+                challengedId,
                 message,
-                date: new Date(),
-            }
-        ])
+            })
+
+            setChatMessages([
+                ...chatMessages,
+                {
+                    sender: 'player1',
+                    message,
+                    date: new Date(),
+                }
+            ])
+
+        }
 
         reset();
 
@@ -49,7 +53,7 @@ export const ChatBox = ({ gameId, userName, show, chatMessages, userId, challeng
         <div className="chat__header">
             <h6>Chat with { userName }</h6>
         </div>
-        <div className="chat__box">
+        <ScrollToBottom className="chat__scrollToBottom">
             {
                 chatMessages.map((message, index) => {
                     return <div key={index} className={`chat__message ${ message.sender === 'player1' ? 'chat__messageOne' : 'chat__messageTwo' }`}>
@@ -58,7 +62,7 @@ export const ChatBox = ({ gameId, userName, show, chatMessages, userId, challeng
                 })
 
             }
-        </div>
+        </ScrollToBottom>
 
             <InputGroup className="chat__inputText">
                 <FormControl

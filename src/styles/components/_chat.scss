@@ -7,13 +7,17 @@
     border-radius: 20px;
 }
 
-.chat__box {
-    min-height: 200px;
-    min-width: 300px;
-    display: flex;
-    flex-direction: column;
-    overflow: scroll;
-    max-height: 350px;
+.chat__scrollToBottom {
+
+    div:first-child {
+        min-height: 200px;
+        min-width: 300px;
+        display: flex;
+        flex-direction: column;
+        overflow: scroll;
+        max-height: 350px;
+    }
+
 }
 
 .chat__header {
