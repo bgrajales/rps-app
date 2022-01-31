@@ -134,7 +134,7 @@ export const getActiveGames = ( userId, setCurrentGames, page, setMaxPages, setL
     }
 } // Refresh Token done
 
-export const getGameRound = ( userId, gameId, setRound, setActiveGame, token, refreshToken, setLoader ) => {
+export const getGameRound = ( userId, gameId, setRound, setActiveGame, token, refreshToken, setLoader, setChatMessages ) => {
     
     return (dispatch) => {
         const headers = {
@@ -148,6 +148,8 @@ export const getGameRound = ( userId, gameId, setRound, setActiveGame, token, re
         .then( ({ data }) => {
             console.log(data)
             setActiveGame(data)
+            
+            setChatMessages(data.chat)
             
             const activeGame = data
 

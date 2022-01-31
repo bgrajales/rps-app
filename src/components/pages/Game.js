@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { useParams } from 'react-router-dom'
 import { useNavigate } from 'react-router-dom'
 import { Oval } from 'react-loader-spinner'
+import { BsFillChatLeftFill } from 'react-icons/bs'
 
 import styled, { keyframes } from 'styled-components'
 import { bounceInDown, bounceInUp, fadeInRight } from 'react-animations'
@@ -17,6 +18,7 @@ import { Player1Choice } from '../uiElements/Player1Choice'
 import { Player2Choice } from '../uiElements/Player2Choice'
 import { PlayerChoiceResume } from '../uiElements/PlayerChoiceResume'
 import { RoundWinnerIndicator } from '../uiElements/RoundWinnerIndicator'
+import { ChatBox } from '../uiElements/ChatBox'
 
 const BounceInDown = styled.div`animation: 1s ${keyframes`${bounceInDown}`}`
 const BounceInUp = styled.div`animation: 1s ${keyframes`${bounceInUp}`}`
@@ -38,6 +40,8 @@ export const Game = () => {
     const [ currentRound, setCurrentRound ] = useState(1)
     const [ updateGame, setUpdateGame ] = useState(false)
     const [ loader, setLoader ] = useState(true)
+    const [ showChat, setShowChat ] = useState(false)
+    const [ chatMessages, setChatMessages ] = useState([])
 
     const [roundGame, setRound] = useState({
         round: 'null',
@@ -48,7 +52,7 @@ export const Game = () => {
 
     useEffect(() => {
         
-        dispatch(getGameRound( user.id, gameId, setRound, setActiveGame, token, refreshToken, setLoader ))
+        dispatch(getGameRound( user.id, gameId, setRound, setActiveGame, token, refreshToken, setLoader, setChatMessages ))
         document.body.classList.add('game-page')
 
         return () => {
@@ -95,6 +99,10 @@ export const Game = () => {
             navigate('/app/home')
 
         }, 1000)
+    }
+
+    const handleChatIconClick = () => {
+        setShowChat(!showChat)
     }
     
     socket.on('handPickedPlayer2', (data) => {
@@ -177,6 +185,20 @@ export const Game = () => {
                 <Button onClick={ finishGame } className="container">
                     Finish Game
                 </Button>
+
+                <ChatBox 
+                    gameId={ gameId } 
+                    userName={ activeGame.player2?.userName } 
+                    show={ showChat } 
+                    chatMessages={ chatMessages }
+                    userId={ user.id }
+                    challengedId={ activeGame.player2?.id }
+                    setChatMessages={ setChatMessages }
+                />
+
+                <div className="game__chatIcon" onClick={ handleChatIconClick }>
+                        <BsFillChatLeftFill />
+                </div>
             </div>
         )
     } else {
@@ -280,6 +302,20 @@ export const Game = () => {
                         </div>
                     </FadeInRight>
                 }
+
+                <ChatBox 
+                    gameId={ gameId } 
+                    userName={ activeGame.player2?.userName } 
+                    show={ showChat } 
+                    chatMessages={ chatMessages }
+                    userId={ user.id }
+                    challengedId={ activeGame.player2?.id }
+                    setChatMessages={ setChatMessages }
+                />
+
+                <div className="game__chatIcon" onClick={ handleChatIconClick }>
+                        <BsFillChatLeftFill />
+                </div>
             </div>
         )
     }
