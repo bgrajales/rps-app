@@ -254,17 +254,17 @@
 
 .game__chatIcon {
     position: absolute;
-    bottom: 25px;
-    left: 25px;
-    width: 40px;
-    height: 40px;
+    bottom: 15px;
+    left: 15px;
+    width: 60px;
+    height: 60px;
     display: flex;
     align-items: center;
     justify-content: center;
     background-color: #3EC6FF;
     border-radius: 50px;
     transition: all 0.1s ease-in-out;
-    outline: 5px solid #fff;
+    border: 5px solid #fff;
 
     svg {
         fill: #fff;

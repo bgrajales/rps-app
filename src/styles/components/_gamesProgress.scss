@@ -95,6 +95,14 @@
     .gamesProgress__liDiv {
         flex-direction: column;
         gap: 20px;
+
+        h4 {
+            font-size: 1rem;
+        }
+    }
+
+    .gamesProgress__roundsDiv {
+        width: 100%;
     }
 
 }

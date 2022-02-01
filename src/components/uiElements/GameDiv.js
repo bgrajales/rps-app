@@ -43,7 +43,7 @@ export const GameDiv = ({ game }) => {
                         <h4>Round 1</h4>
                         {
                             game.rounds[0].player1hand === 'null' ?
-                            <p>Waiting for your pick...</p> :
+                            <p>Waiting...</p> :
                             <div className="gameProgress__vsDiv">
                                 <>{ game.rounds[0].player1hand === 'r' ? <Rock /> :
                                 game.rounds[0].player1hand === 'p' ? <Paper /> :
@@ -58,7 +58,7 @@ export const GameDiv = ({ game }) => {
                         <h4>Round 2</h4>
                         {
                             game.rounds[1].player1hand === 'null' ?
-                            <p>Waiting for your pick...</p> :
+                            <p>Waiting...</p> :
                             <div className="gameProgress__vsDiv">
                                 <>{ game.rounds[1].player1hand === 'r' ? <Rock /> :
                                 game.rounds[1].player1hand === 'p' ? <Paper /> :
@@ -71,7 +71,7 @@ export const GameDiv = ({ game }) => {
                         <h4>Round 3</h4>
                         {
                             game.rounds[2].player1hand === 'null' ?
-                            <p>Waiting for your pick...</p> :
+                            <p>Waiting...</p> :
                             <div className="gameProgress__vsDiv">
                                 <>{ game.rounds[2].player1hand === 'r' ? <Rock /> :
                                 game.rounds[2].player1hand === 'p' ? <Paper /> :

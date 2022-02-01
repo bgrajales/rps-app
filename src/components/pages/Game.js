@@ -5,9 +5,11 @@ import { useParams } from 'react-router-dom'
 import { useNavigate } from 'react-router-dom'
 import { Oval } from 'react-loader-spinner'
 import { BsFillChatLeftFill } from 'react-icons/bs'
+import { MdClose } from 'react-icons/md'
 
 import styled, { keyframes } from 'styled-components'
 import { bounceInDown, bounceInUp, fadeInRight } from 'react-animations'
+import { Transition, animated } from 'react-spring'
 
 import { finishGameAction, getGameRound, goToNextRound, setActiveGamePlayerHand, socket } from '../../actions/users'
 import { ReactComponent as Paper } from '../../assets/images/paper.svg'
@@ -42,6 +44,7 @@ export const Game = () => {
     const [ loader, setLoader ] = useState(true)
     const [ showChat, setShowChat ] = useState(false)
     const [ chatMessages, setChatMessages ] = useState([])
+    const [ newMessage, setNewMessage ] = useState(false)
 
     const [roundGame, setRound] = useState({
         round: 'null',
@@ -103,6 +106,7 @@ export const Game = () => {
 
     const handleChatIconClick = () => {
         setShowChat(!showChat)
+        setNewMessage(false)
     }
     
     socket.on('handPickedPlayer2', (data) => {
@@ -121,6 +125,19 @@ export const Game = () => {
         setTimeout(() => {
             setUpdateGame(!updateGame)        
         }, 1000)
+
+    })
+
+    socket.on('recieveMessage', (data) => {
+    
+        setChatMessages([
+            ...chatMessages,
+            data
+        ])
+
+        if( !showChat ) {
+            setNewMessage(true);
+        }
 
     })
 
@@ -303,18 +320,59 @@ export const Game = () => {
                     </FadeInRight>
                 }
 
-                <ChatBox 
-                    gameId={ gameId } 
-                    userName={ activeGame.player2?.userName } 
-                    show={ showChat } 
-                    chatMessages={ chatMessages }
-                    userId={ user.id }
-                    challengedId={ activeGame.player2?.id }
-                    setChatMessages={ setChatMessages }
-                />
+                {
+                    showChat &&
+                    <ChatBox 
+                        gameId={ gameId } 
+                        userName={ activeGame.player2?.userName } 
+                        show={ showChat } 
+                        chatMessages={ chatMessages }
+                        userId={ user.id }
+                        challengedId={ activeGame.player2?.id }
+                        setChatMessages={ setChatMessages }
+                        setNewMessage={ setNewMessage }
+                    />
+                }
+                
 
-                <div className="game__chatIcon" onClick={ handleChatIconClick }>
-                        <BsFillChatLeftFill />
+                <div className={`game__chatIcon ${ showChat ? 'chat__bubbleRed' : '' } ${ newMessage ? 'chat__newMessage' : ''}`} onClick={ handleChatIconClick }>
+                    {
+                        <Transition
+                            items={ showChat }
+                            from={{ opacity: 0, transform: 0 }}
+                            enter={{ opacity: 1, transform: 1 }}
+                            leave={{ opacity: 0, transform: 0 }}
+                            delay={50}
+                            config={ { duration: 300 } }
+                        >
+                            {({ opacity, transform }, item) => 
+                                item ? (
+                                <animated.div style={{
+                                    position: 'absolute',
+                                    opacity: opacity.to({
+                                        range: [ 0.0, 1.0 ], output: [ 0, 1 ]
+                                    }),
+                                    transform: transform.to({
+                                        range: [ 0.0, 1.0 ], output: [ 'rotate(0deg)', 'rotate(360deg)' ]
+                                    })
+                                }}>
+                                    <MdClose />
+                                </animated.div> )
+                                :
+                                ( <animated.div style={{
+                                    position: 'absolute',
+                                    opacity: opacity.to({
+                                        range: [ 0.0, 1.0 ], output: [ 0, 1 ]
+                                    }),
+                                    transform: transform.to({
+                                        range: [ 0.0, 1.0 ], output: [ 'rotate(0deg)', 'rotate(360deg)' ]
+                                    })
+                                }}>
+                                    <BsFillChatLeftFill />
+                                </animated.div> )
+                            }
+                        </Transition>
+                    }
                 </div>
             </div>
         )

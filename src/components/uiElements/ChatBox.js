@@ -2,11 +2,16 @@ import React from 'react';
 import { InputGroup, FormControl, Button } from 'react-bootstrap';
 import { IoMdSend } from 'react-icons/io';
 import ScrollToBottom from 'react-scroll-to-bottom';
+import styled, { keyframes } from 'styled-components'
+import { bounceInUp } from 'react-animations'
 
 import { useForm } from '../../hooks/useForm'
 import { socket } from '../../actions/users'
+import { format, parseISO } from 'date-fns';
 
-export const ChatBox = ({ gameId, userName, show, chatMessages, userId, challengedId, setChatMessages }) => {
+const BounceInUp = styled.div`animation: 1s ${keyframes`${bounceInUp}`}`
+
+export const ChatBox = ({ gameId, userName, show, chatMessages, userId, challengedId, setChatMessages, setNewMessage }) => {
 
     const [ formValues, handleInputChange, reset ] = useForm({
         message: '',
@@ -30,7 +35,7 @@ export const ChatBox = ({ gameId, userName, show, chatMessages, userId, challeng
                 {
                     sender: 'player1',
                     message,
-                    date: new Date(),
+                    date: new Date().toISOString(),
                 }
             ])
 
@@ -40,25 +45,30 @@ export const ChatBox = ({ gameId, userName, show, chatMessages, userId, challeng
 
     }
 
-    socket.on('recieveMessage', (data) => {
-    
-        setChatMessages([
-            ...chatMessages,
-            data
-        ])
-
-    })
-
-    return <div className={`chat ${ show ? '' : 'd-none'}`}>
+    return <BounceInUp className={`chat ${ show ? '' : 'd-none'}`}>
         <div className="chat__header">
             <h6>Chat with { userName }</h6>
         </div>
         <ScrollToBottom className="chat__scrollToBottom">
             {
                 chatMessages.map((message, index) => {
-                    return <div key={index} className={`chat__message ${ message.sender === 'player1' ? 'chat__messageOne' : 'chat__messageTwo' }`}>
-                        <p>{ message.message }</p>
-                    </div>
+                    return <span key={index} className={`chat__message ${ message.sender === 'player1' ? 'chat__messageOne' : 'chat__messageTwo' }`}>
+                        <span>
+                            <p>{ message.message }</p>
+                            <p
+                                className={
+                                    message.sender === 'player1' ?
+                                    'chat__messageOne__date' :
+                                    'chat__messageTwo__date'
+                                }
+                            >{ 
+                                format(parseISO(message.date), 'dd') === format(new Date(), 'dd') 
+                                ? format(parseISO(message.date), 'HH:mm')
+                                : format(parseISO(message.date), 'dd MMM HH:mm')
+                            }</p>
+                        </span>
+                        
+                    </span>
                 })
 
             }
@@ -72,10 +82,19 @@ export const ChatBox = ({ gameId, userName, show, chatMessages, userId, challeng
                     value={ formValues.message }
                     onChange={ handleInputChange }
                     name="message"
+                    onKeyPress={ (e) => {
+                        if( e.key === 'Enter' ) {
+                            handleSendMessage(e);
+                        }
+                    } }
                 />
-                <Button variant="outline-secondary" id="button-addon2" onClick={ handleSendMessage }>
+                <Button 
+                    variant="outline-secondary" 
+                    id="button-addon2" 
+                    onClick={ handleSendMessage }
+                >
                     <IoMdSend />
                 </Button>
             </InputGroup>
-    </div>
+    </BounceInUp>
 };
