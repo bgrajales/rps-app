@@ -33,6 +33,47 @@
     justify-content: space-evenly;
 }
 
+.challenge__titleDiv {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+
+    h2 {
+        font-size: 3.5rem;
+        font-weight: 600;
+        margin: 0;
+    }
+}
+
+.challenge__refresh {
+    width: 40px;
+    height: 40px;
+    transition: transform 0.3s ease-in-out;
+
+    &:hover {
+        cursor: pointer;
+        fill: #3EC6FF;
+        transform: scale(1.1);
+    }
+
+}
+
+.challenge__rotating {
+    animation: rotation 1s infinite linear;
+    transform-origin: center center;
+    fill: #3EC6FF;
+}
+
+@keyframes rotation {
+    from {
+        transform: rotate(0deg);
+      }
+      to {
+        transform: rotate(359deg);
+      }
+}
+
 .challenge__searchInfo {
     position: absolute;
     bottom: -90px;
@@ -45,4 +86,12 @@
     width: 90%;
     left: 50%;
     transform: translate(-50%);
+}
+
+@media (max-width: 768px) {
+    
+    .challenge__titleDiv {
+        flex-direction: column;
+    }
+    
 }

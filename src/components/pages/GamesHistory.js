@@ -25,6 +25,7 @@ export const GamesHistory = () => {
 
     useEffect( () => {
 
+        sessionStorage.setItem('lastPath', `/app/gamesHistory`)
         dispatch(getGamesHistory( user.id, setGames, page, setMaxPage, setLoader, token, refreshToken ))
 
     }, [ user.id, page, token, refreshToken, dispatch])

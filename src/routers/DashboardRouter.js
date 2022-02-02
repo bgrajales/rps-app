@@ -1,7 +1,7 @@
 import React from 'react'
 import {
     Routes,
-    Route
+    Route,
 } from "react-router-dom";
 
 import { Challenge } from '../components/pages/Challenge';
@@ -11,6 +11,7 @@ import { GamesInProgress } from '../components/pages/GamesInProgress';
 import { Home } from '../components/pages/Home';
 
 export const DashboardRouter = () => {
+
     return (
         <>
             <Routes>

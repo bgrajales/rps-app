@@ -27,6 +27,7 @@ export const GamesInProgress = () => {
 
     useEffect( () => {
 
+        sessionStorage.setItem('lastPath', `/app/gamesInProgress`)
         dispatch(getActiveGames(user.id, setCurrentGames, page, setMaxPages, setLoader, token, refreshToken))
 
     }, [user.id, page, token, refreshToken, dispatch])

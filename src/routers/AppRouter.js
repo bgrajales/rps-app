@@ -3,7 +3,7 @@ import { useDispatch } from 'react-redux';
 import {
     BrowserRouter as Router,
     Routes,
-    Route
+    Route,
 } from "react-router-dom";
 
 import { userAlreadyLoggedIn } from '../actions/auth';
@@ -22,11 +22,11 @@ export const AppRouter = () => {
         dispatch( startLoading() );
 
         const refreshToken = localStorage.getItem('refreshToken') || undefined;
-
         setTimeout(() => {
             if (refreshToken) {
                 dispatch( userAlreadyLoggedIn( refreshToken ) )
             } else {
+                sessionStorage.clear();
                 dispatch( finishLoading() )
             }
         }, 1500)

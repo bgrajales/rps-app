@@ -4,6 +4,7 @@ import { Button, FormControl, InputGroup } from 'react-bootstrap'
 import { useSelector } from 'react-redux'
 import { useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
+import { RiRefreshLine } from 'react-icons/ri'
 
 import { clearError, getChallengers, searchUser } from '../../actions/users'
 import { ChallengeUser } from '../uiElements/ChallengeUser'
@@ -28,10 +29,12 @@ export const Challenge = () => {
 
     const handleGoBack = () => {
         dispatch( clearError() )
+        sessionStorage.setItem('lastPath', `/app/home`)
         navigate('/app/home')
     }
 
     useEffect(() => {
+        sessionStorage.setItem('lastPath', `/app/challenge`)
         dispatch( getChallengers( user.id, token, refreshToken ) )
     }, [dispatch, user.id, token, refreshToken])
 
@@ -50,6 +53,15 @@ export const Challenge = () => {
         }
     }
 
+    const handleOnlineRefresh = (e) => {
+        dispatch( getChallengers( user.id, token, refreshToken ) )
+        e.target.classList.add('challenge__rotating')
+
+        setTimeout(() => {
+            e.target.classList.remove('challenge__rotating')
+        }, 1000)
+    }
+
     return (
         <div className="base__div challenge_div">
             <header className="container base__secondaryHeader">
@@ -57,8 +69,9 @@ export const Challenge = () => {
             </header>
 
             <div className="challenge__infoDiv">
-                <div className="base__titleDiv">
+                <div className="challenge__titleDiv">
                     <h2 style={{textAlign: 'center'}}>Challenge a player</h2>
+                    <RiRefreshLine className="challenge__refresh" onClick={ handleOnlineRefresh }/>
                 </div>
 
                 {
@@ -82,7 +95,7 @@ export const Challenge = () => {
                         />
                         <div className="challenge__searchInfo">
                         {
-                            userSearched.userName && userInput.length > 5 ?
+                            userSearched.userName && userInput.length > 5 && userSearched.userName !== user.userName ?
                             <ChallengeUser
                                 key={ userSearched.userId }
                                 user={ {
@@ -90,7 +103,7 @@ export const Challenge = () => {
                                     id: userSearched.userId,
                                 } }
                             />
-                            : userSearched.userName === '' && userInput.length > 5 ?
+                            : userInput.length > 5 ?
                             <h2>No user found</h2>
                             : null
                         }

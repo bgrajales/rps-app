@@ -36,6 +36,7 @@ export const Home = () => {
     const [ loading, setLoading ] = useState(true)
 
     const handleLogout = () => {
+        sessionStorage.setItem('lastPath', `/`)
         socket.emit('logout', user.id)
 
         dispatch( userLogout( user.id ) )
@@ -50,6 +51,7 @@ export const Home = () => {
 
     useEffect(() => {
 
+        sessionStorage.setItem('lastPath', `/app/home`)
         dispatch(getStats( user.id, setStats, token, refreshToken, setLoading ))
 
         setNotifications( userNotification )
@@ -120,7 +122,8 @@ export const Home = () => {
         socket.emit('joinGame', {
             gameId: gameId,
         })
-        
+
+        sessionStorage.setItem('lastPath', `/app/game/${gameId}`)
         navigate(`/app/game/${gameId}`)
     }
 

@@ -92,6 +92,7 @@ export const challengeUser = ( userId, challengedId, userName, challengedName, n
                     gameId: data.gameId,
                 })
 
+                sessionStorage.setItem('lastPath', `/app/game/${ data.gameId }`)
                 navigate(`/app/game/${ data.gameId }`)
             }
             // dispatch( setChallenge(data.challenge) )

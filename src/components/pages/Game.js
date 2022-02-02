@@ -98,9 +98,8 @@ export const Game = () => {
         dispatch(finishGameAction( user.id, activeGame.id, token, refreshToken ))
 
         setTimeout(() => {
-
+            sessionStorage.setItem('lastPath', `/app/home`)
             navigate('/app/home')
-
         }, 1000)
     }
 
