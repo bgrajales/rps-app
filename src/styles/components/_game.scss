@@ -111,6 +111,20 @@
     }
 }
 
+.game__winner {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    background-color: #3ec;
+    padding: 0px 20px;
+    border-radius: 10px;
+    color: #fff;
+
+    svg {
+        height: 50%;
+    }
+}
+
 .game__winnerRound {
     width: 15px;
     height: 15px;
@@ -311,6 +325,11 @@
         .game__handsPickDiv {
             gap: 10px;
         }
+    }
+
+    .game__nameVsDiv {
+        flex-direction: column;
+        align-items: center;
     }
 }
 

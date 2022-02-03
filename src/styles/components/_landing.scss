@@ -83,6 +83,10 @@
     background-repeat: repeat;
     background-size: 300px 300px;
     background-color: #fff;
+
+    svg {
+        overflow: visible;
+    }
 }
 
 @media (max-width: 992px) {

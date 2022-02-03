@@ -1,6 +1,7 @@
 import { apiUrl } from '../utils/apiUrl'
 import axios from 'axios'
 
+import { gameWinner } from '../utils/gameWinner'
 import { types } from "../types/types"
 
 import socketIOClient from 'socket.io-client'
@@ -163,6 +164,39 @@ export const getGameRound = ( userId, gameId, setRound, setActiveGame, token, re
 
             setLoader(false)
 
+        })
+        .catch( err => {
+            console.log(err)
+            setLoader(false)
+            if (err.response.status === 403) {
+                dispatch(refreshTokenAction( refreshToken ))
+            }
+        })
+    } // Refresh Token done
+
+} // Refresh Token done
+
+export const getActiveGame = ( userId, gameId, setActiveGame, token, refreshToken, setChatMessages, setLoader, setWinner ) => {
+    
+    return (dispatch) => {
+        const headers = {
+            'Content-Type': 'application/json',
+            'authorization': token
+        }
+        
+        axios.get(`${apiUrl('getActiveGameById')}?userId=${userId}&gameId=${gameId}`, {
+            headers: headers
+        })
+        .then( ({ data }) => {
+            console.log(data)
+            setActiveGame(data)
+            
+            setChatMessages(data.chat)
+
+            setWinner( gameWinner(data.rounds) )
+
+            setLoader(false)
+            
         })
         .catch( err => {
             console.log(err)

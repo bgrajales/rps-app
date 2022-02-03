@@ -11,14 +11,13 @@ import styled, { keyframes } from 'styled-components'
 import { bounceInDown, bounceInUp, fadeInRight } from 'react-animations'
 import { Transition, animated } from 'react-spring'
 
-import { finishGameAction, getGameRound, goToNextRound, setActiveGamePlayerHand, socket } from '../../actions/users'
+import { getGameRound, goToNextRound, setActiveGamePlayerHand, socket } from '../../actions/users'
 import { ReactComponent as Paper } from '../../assets/images/paper.svg'
 import { ReactComponent as Rock } from '../../assets/images/rock.svg'
 import { ReactComponent as Scissors } from '../../assets/images/scissors.svg'
 import { setWinner } from '../../utils/setWinner'
 import { Player1Choice } from '../uiElements/Player1Choice'
 import { Player2Choice } from '../uiElements/Player2Choice'
-import { PlayerChoiceResume } from '../uiElements/PlayerChoiceResume'
 import { RoundWinnerIndicator } from '../uiElements/RoundWinnerIndicator'
 import { ChatBox } from '../uiElements/ChatBox'
 
@@ -42,6 +41,7 @@ export const Game = () => {
     const [ currentRound, setCurrentRound ] = useState(1)
     const [ updateGame, setUpdateGame ] = useState(false)
     const [ loader, setLoader ] = useState(true)
+
     const [ showChat, setShowChat ] = useState(false)
     const [ chatMessages, setChatMessages ] = useState([])
     const [ newMessage, setNewMessage ] = useState(false)
@@ -56,6 +56,7 @@ export const Game = () => {
     useEffect(() => {
         
         dispatch(getGameRound( user.id, gameId, setRound, setActiveGame, token, refreshToken, setLoader, setChatMessages ))
+
         document.body.classList.add('game-page')
 
         return () => {
@@ -79,6 +80,8 @@ export const Game = () => {
 
         dispatch(goToNextRound( user.id, activeGame.id, roundGame.round, setRound, token, refreshToken ))
 
+        dispatch(getGameRound( user.id, gameId, setRound, setActiveGame, token, refreshToken, setLoader, setChatMessages ))
+
         if( roundGame.round < 3 ) {
             
             setActiveGame({
@@ -90,17 +93,6 @@ export const Game = () => {
             
         } 
         
-    }
-
-    const finishGame = ( ) => {
-        console.log('finish game', user.id, activeGame.id)
-
-        dispatch(finishGameAction( user.id, activeGame.id, token, refreshToken ))
-
-        setTimeout(() => {
-            sessionStorage.setItem('lastPath', `/app/home`)
-            navigate('/app/home')
-        }, 1000)
     }
 
     const handleChatIconClick = () => {
@@ -140,68 +132,108 @@ export const Game = () => {
 
     })
 
-    if ( roundGame.round === 3 && roundGame.winner !== 'null' ) {
-        document.body.classList.remove('game-page')
-
-        if( currentRound !== 1 ){
-            setCurrentRound( 1 )
-        }
-    }
-
-    if ( roundGame.round === 3 && roundGame.winner !== 'null' ) {
-        return (
-            <div className="base__div game__div">
-
-                <div className="game__nameVsDiv">
-                    <h1>
-                        {
-                            activeGame.player1.userName
-                        }
-                    </h1>
-                    <h1>VS</h1>
-                    <h1>
-                        {
-                            activeGame.player2.userName
-                        }
-                    </h1>
-                </div>   
-
-                <div class="game__parent">
-                    <div class="game__div1">
-                        {
-                            activeGame.rounds.map( ( round, index ) => {
-                                return (
-                                    <PlayerChoiceResume 
-                                        key={index}
-                                        round={ round}
-                                        player={ 'player1' }
-                                    />
-                                )
-                            })
-                        }
+    return (
+        <div className="game__div">
+            <BounceInDown>
+                <header>
+                    <div>
+                        <h2>Round {roundGame.round}/3</h2>
+                        <div className="game__nameDiv">
+                            <h4>{ user.userName }</h4>
+                            {
+                                activeGame.rounds?.map(round =>{
+                                    return <RoundWinnerIndicator key={ round.round } round={ round } player={ 'player1' } />
+                                })
+                            }
+                        </div>
+                        <div className="game__nameDiv">
+                            <h4> { activeGame.player2?.userName } </h4>
+                            {
+                                activeGame.rounds?.map(round =>{
+                                    return <RoundWinnerIndicator key={ round.round } round={ round } player={ 'player2' } />
+                                })
+                            }
+                        </div>
                     </div>
-                    
-                   
-                    <div class="game__div2">
+
+                    <Button variant="danger" onClick={ () => navigate('/app/home') }>
+                        Leave
+                    </Button>
+                </header>
+            </BounceInDown>
+            <div className="game__handsPickDiv">
+                <BounceInDown className="game__player2Choice">
                         {
-                            activeGame.rounds.map( ( round, index ) => {
-                                return (
-                                    <PlayerChoiceResume 
-                                        key={index}
-                                        round={round}
-                                        player={ 'player2' }
-                                    />
-                                )
-                            })
+                            roundGame.player2hand === 'null' || roundGame.player1hand === 'null' ?
+                            <div className="game__player2ChoiceNull">
+                                <h1>{
+                                    roundGame.player2hand === 'null' ? 'Waiting for Player 2' : 'Player 2 has picked!'
+                                }</h1>
+                            </div>
+                            :
+                            <div className="game__player2ChoicePickand">
+                                <Player2Choice hand={ roundGame.player2hand } />
+                            </div>
                         }
+                </BounceInDown>
+
+                <BounceInUp className="game__player1Choice"> 
+                {
+                    loader ? 
+                        <Oval
+                            strokeWidth={5}
+                            color='#000'
+                            secondaryColor="#656565"
+                        />
+                        :
+                        <>
+                        {
+                            roundGame.player1hand === 'null' ?
+                            <div className="game__player1ChoiceNull">
+                                <h1>Pick your hand!</h1>
+                                <div className="game__player1ChoiceHand">
+                                    <div className="game__paperImage">
+                                        <Paper className="game__hand" onClick={ () => pickHand('p') }/>
+                                    </div>
+                                    <div className="game__rockImage">
+                                        <Rock className="game__hand" onClick={ () => pickHand('r') }/>
+                                    </div>
+                                    <div className="game__scissorsImage">
+                                        <Scissors className="game__hand" onClick={ () => pickHand('s') }/>
+                                    </div>
+                                </div>
+                            </div>
+                            :
+                            <div className="game__player1ChoicePick">
+                                <Player1Choice hand={roundGame.player1hand} />
+                            </div>
+                        }
+                        </>
+                        
+                }
+                </BounceInUp>
+            </div>
+
+            {
+                (roundGame.round !== 3 && (roundGame.player1hand !== 'null' && roundGame.player2hand !== 'null')) &&
+                <FadeInRight className="game__roundWinner">
+                    {
+                        roundGame.winner === 'player1' ?
+                        <h1>You Win this round!</h1>
+                        :
+                        <h1>You Lose this round!</h1>
+                    }
+
+                    <div className="game__nextRound">
+                        <Button variant="primary" onClick={ () => nextRound() }>
+                            Next Round
+                        </Button>
                     </div>
-                    
-                </div>
+                </FadeInRight>
+            }
 
-                <Button onClick={ finishGame } className="container">
-                    Finish Game
-                </Button>
-
+            {
+                showChat &&
                 <ChatBox 
                     gameId={ gameId } 
                     userName={ activeGame.player2?.userName } 
@@ -210,170 +242,61 @@ export const Game = () => {
                     userId={ user.id }
                     challengedId={ activeGame.player2?.id }
                     setChatMessages={ setChatMessages }
+                    setNewMessage={ setNewMessage }
                 />
-
-                <div className="game__chatIcon" onClick={ handleChatIconClick }>
-                        <BsFillChatLeftFill />
-                </div>
-            </div>
-        )
-    } else {
-
-        return (
-            <div className="game__div">
-                <BounceInDown>
-                    <header>
-                        <div>
-                            <h2>Round {roundGame.round}/3</h2>
-                            <div className="game__nameDiv">
-                                <h4>{ user.userName }</h4>
-                                {
-                                    activeGame.rounds?.map(round =>{
-                                        return <RoundWinnerIndicator key={ round.round } round={ round } player={ 'player1' } />
-                                    })
-                                }
-                            </div>
-                            <div className="game__nameDiv">
-                                <h4> { activeGame.player2?.userName } </h4>
-                                {
-                                    activeGame.rounds?.map(round =>{
-                                        return <RoundWinnerIndicator key={ round.round } round={ round } player={ 'player2' } />
-                                    })
-                                }
-                            </div>
-                        </div>
-
-                        <Button variant="danger" onClick={ () => navigate('/app/home') }>
-                            Leave
-                        </Button>
-                    </header>
-                </BounceInDown>
-                <div className="game__handsPickDiv">
-                    <BounceInDown className="game__player2Choice">
-                            {
-                                roundGame.player2hand === 'null' || roundGame.player1hand === 'null' ?
-                                <div className="game__player2ChoiceNull">
-                                    <h1>{
-                                        roundGame.player2hand === 'null' ? 'Waiting for Player 2' : 'Player 2 has picked!'
-                                    }</h1>
-                                </div>
-                                :
-                                <div className="game__player2ChoicePickand">
-                                    <Player2Choice hand={ roundGame.player2hand } />
-                                </div>
-                            }
-                    </BounceInDown>
-
-                    <BounceInUp className="game__player1Choice"> 
-                   {
-                       loader ? 
-                            <Oval
-                                strokeWidth={5}
-                                color='#000'
-                                secondaryColor="#656565"
-                            />
-                          :
-                          <>
-                            {
-                                roundGame.player1hand === 'null' ?
-                                <div className="game__player1ChoiceNull">
-                                    <h1>Pick your hand!</h1>
-                                    <div className="game__player1ChoiceHand">
-                                        <div className="game__paperImage">
-                                            <Paper className="game__hand" onClick={ () => pickHand('p') }/>
-                                        </div>
-                                        <div className="game__rockImage">
-                                            <Rock className="game__hand" onClick={ () => pickHand('r') }/>
-                                        </div>
-                                        <div className="game__scissorsImage">
-                                            <Scissors className="game__hand" onClick={ () => pickHand('s') }/>
-                                        </div>
-                                    </div>
-                                </div>
-                                :
-                                <div className="game__player1ChoicePick">
-                                    <Player1Choice hand={roundGame.player1hand} />
-                                </div>
-                            }
-                            </>
-                            
-                   }
-                    </BounceInUp>
-                </div>
-
+            }
+            
+            <div className={`game__chatIcon ${ showChat ? 'chat__bubbleRed' : '' } ${ newMessage ? 'chat__newMessage' : ''}`} onClick={ handleChatIconClick }>
                 {
-                    (roundGame.round !== 3 && (roundGame.player1hand !== 'null' && roundGame.player2hand !== 'null')) &&
-                    <FadeInRight className="game__roundWinner">
-                        {
-                            roundGame.winner === 'player1' ?
-                            <h1>You Win this round!</h1>
+                    <Transition
+                        items={ showChat }
+                        from={{ opacity: 0, transform: 0 }}
+                        enter={{ opacity: 1, transform: 1 }}
+                        leave={{ opacity: 0, transform: 0 }}
+                        delay={50}
+                        config={ { duration: 300 } }
+                    >
+                        {({ opacity, transform }, item) => 
+                            item ? (
+                            <animated.div style={{
+                                position: 'absolute',
+                                opacity: opacity.to({
+                                    range: [ 0.0, 1.0 ], output: [ 0, 1 ]
+                                }),
+                                transform: transform.to({
+                                    range: [ 0.0, 1.0 ], output: [ 'rotate(0deg)', 'rotate(360deg)' ]
+                                })
+                            }}>
+                                <MdClose />
+                            </animated.div> )
                             :
-                            <h1>You Lose this round!</h1>
+                            ( <animated.div style={{
+                                position: 'absolute',
+                                opacity: opacity.to({
+                                    range: [ 0.0, 1.0 ], output: [ 0, 1 ]
+                                }),
+                                transform: transform.to({
+                                    range: [ 0.0, 1.0 ], output: [ 'rotate(0deg)', 'rotate(360deg)' ]
+                                })
+                            }}>
+                                <BsFillChatLeftFill />
+                            </animated.div> )
                         }
-
-                        <div className="game__nextRound">
-                            <Button variant="primary" onClick={ () => nextRound() }>
-                                Next Round
-                            </Button>
-                        </div>
-                    </FadeInRight>
+                    </Transition>
                 }
-
-                {
-                    showChat &&
-                    <ChatBox 
-                        gameId={ gameId } 
-                        userName={ activeGame.player2?.userName } 
-                        show={ showChat } 
-                        chatMessages={ chatMessages }
-                        userId={ user.id }
-                        challengedId={ activeGame.player2?.id }
-                        setChatMessages={ setChatMessages }
-                        setNewMessage={ setNewMessage }
-                    />
-                }
-                
-
-                <div className={`game__chatIcon ${ showChat ? 'chat__bubbleRed' : '' } ${ newMessage ? 'chat__newMessage' : ''}`} onClick={ handleChatIconClick }>
-                    {
-                        <Transition
-                            items={ showChat }
-                            from={{ opacity: 0, transform: 0 }}
-                            enter={{ opacity: 1, transform: 1 }}
-                            leave={{ opacity: 0, transform: 0 }}
-                            delay={50}
-                            config={ { duration: 300 } }
-                        >
-                            {({ opacity, transform }, item) => 
-                                item ? (
-                                <animated.div style={{
-                                    position: 'absolute',
-                                    opacity: opacity.to({
-                                        range: [ 0.0, 1.0 ], output: [ 0, 1 ]
-                                    }),
-                                    transform: transform.to({
-                                        range: [ 0.0, 1.0 ], output: [ 'rotate(0deg)', 'rotate(360deg)' ]
-                                    })
-                                }}>
-                                    <MdClose />
-                                </animated.div> )
-                                :
-                                ( <animated.div style={{
-                                    position: 'absolute',
-                                    opacity: opacity.to({
-                                        range: [ 0.0, 1.0 ], output: [ 0, 1 ]
-                                    }),
-                                    transform: transform.to({
-                                        range: [ 0.0, 1.0 ], output: [ 'rotate(0deg)', 'rotate(360deg)' ]
-                                    })
-                                }}>
-                                    <BsFillChatLeftFill />
-                                </animated.div> )
-                            }
-                        </Transition>
-                    }
-                </div>
             </div>
-        )
-    }
+
+            {
+                roundGame.round === 3 && roundGame.winner !== 'null' &&
+                <FadeInRight className="game__roundWinner">
+                    {
+                        <Button variant="primary" onClick={ () => navigate(`/app/gameFinish/${gameId}`) }>
+                            See game results
+                        </Button>    
+                    }
+                </FadeInRight>
+            }
+        </div>
+    )
+
 }
