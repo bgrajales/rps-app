@@ -6,6 +6,7 @@ import {
 
 import { Challenge } from '../components/pages/Challenge';
 import { Game } from '../components/pages/Game';
+import { GameAi } from '../components/pages/GameAi';
 import { GameFinish } from '../components/pages/GameFinish';
 import { GamesHistory } from '../components/pages/GamesHistory';
 import { GamesInProgress } from '../components/pages/GamesInProgress';
@@ -21,6 +22,7 @@ export const DashboardRouter = () => {
                 <Route path="challenge" element={<Challenge />}/>
                 <Route path="gamesInProgress" element={<GamesInProgress />}/>
                 <Route path="game/:gameId" element={<Game />}/>
+                <Route path="gameAi/:gameId" element={<GameAi />}/>
                 <Route path="gameFinish/:gameId" element={<GameFinish />}/>
                 <Route path="gamesHistory" element={<GamesHistory />}/>
                 

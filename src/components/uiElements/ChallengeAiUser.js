@@ -3,11 +3,11 @@ import { useEffect } from 'react'
 import { Button } from 'react-bootstrap'
 import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
-import { IoMdPerson } from 'react-icons/io'
+import { FaRobot } from 'react-icons/fa'
 
-import { challengeUser } from '../../actions/users'
+import { challengeAi } from '../../actions/users'
 
-export const ChallengeUser = ({ user }) => {
+export const ChallengeAiUser = ({ user }) => {
     
     const navigate = useNavigate()
 
@@ -16,9 +16,9 @@ export const ChallengeUser = ({ user }) => {
     const token = useSelector(state => state.auth.token)
     const refreshToken = useSelector(state => state.auth.refreshToken)
     
-    const handleChallengeUser = () => {
+    const handleChallengeAi = () => {
 
-        dispatch( challengeUser( challenger.id, user.id, challenger.userName, user.userName, navigate, token, refreshToken ) )
+        dispatch( challengeAi( challenger.id, user.userId, challenger.userName, user.userName, navigate, token, refreshToken ) )
 
     }
 
@@ -29,9 +29,10 @@ export const ChallengeUser = ({ user }) => {
         <div className="challenge__user">
             <h3 className="challenge__userh3">
                 {user.userName}
-                <IoMdPerson />
+                <FaRobot />
             </h3>
-            <Button variant="primary" onClick={ handleChallengeUser }>Challenge</Button>
+            
+            <Button variant="primary" onClick={ handleChallengeAi }>Challenge</Button>
         </div>
     )
 }

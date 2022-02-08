@@ -8,6 +8,9 @@ import { RiRefreshLine } from 'react-icons/ri'
 
 import { clearError, getChallengers, searchUser } from '../../actions/users'
 import { ChallengeUser } from '../uiElements/ChallengeUser'
+import { ChallengeAiUser } from '../uiElements/ChallengeAiUser'
+
+var genUsername = require('unique-username-generator')
 
 export const Challenge = () => {
 
@@ -27,6 +30,8 @@ export const Challenge = () => {
         userId: '',
     })
 
+    const [ aiUsers, setAiUsers ] = useState([])
+
     const handleGoBack = () => {
         dispatch( clearError() )
         sessionStorage.setItem('lastPath', `/app/home`)
@@ -36,7 +41,29 @@ export const Challenge = () => {
     useEffect(() => {
         sessionStorage.setItem('lastPath', `/app/challenge`)
         dispatch( getChallengers( user.id, token, refreshToken ) )
-    }, [dispatch, user.id, token, refreshToken])
+
+        if(aiUsers.length === 0) {
+            let auxAiUsers = []
+
+            if( onlineUsers?.length >= 0 && onlineUsers.length < 5 ) {
+        
+                for(let i = 0; i < 5 - onlineUsers.length; i++) {
+                    
+                    const iaUsername = genUsername.generateUsername("", 0, 9)
+                    const iaUserId = Math.random().toString(36).slice(2)
+        
+                    auxAiUsers.push({
+                        userName: iaUsername,
+                        userId: iaUserId,
+                    })
+                }
+        
+            }
+
+            setAiUsers( auxAiUsers )
+        }
+
+    }, [dispatch, user.id, token, refreshToken, onlineUsers, aiUsers])
 
     const handleSearchChange = (e) => {
         setUserInput(e.target.value)
@@ -122,8 +149,10 @@ export const Challenge = () => {
                         ))
                     }
                     {
-                        onlineUsers?.length === 0 &&
-                        <p>No online players</p>
+                        aiUsers?.length > 0 &&
+                        aiUsers.map(user => (
+                            <ChallengeAiUser key={ user.userId } user={ user } />
+                        ))
                     }
                 </div>
             </div>

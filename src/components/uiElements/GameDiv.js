@@ -30,7 +30,7 @@ export const GameDiv = ({ game }) => {
               <div className="gamesProgress__liDiv">
                 <div className="gamesProgress__opponent">
                     <h3>{ game.player2.userName }</h3>
-                    <NavLink to={`/app/game/${game.id}`}>
+                    <NavLink to={ game.gameType === 'user' ? `/app/game/${game.id}` : `/app/gameAi/${game.id}`}>
                         <Button variant="primary" onClick={ handleContinue }>                    
                             Continue Game
                         </Button>

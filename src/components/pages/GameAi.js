@@ -11,11 +11,10 @@ import styled, { keyframes } from 'styled-components'
 import { bounceInDown, bounceInUp, fadeInRight } from 'react-animations'
 import { Transition, animated } from 'react-spring'
 
-import { getGameById, goToNextRound, setActiveGamePlayerHand, socket } from '../../actions/users'
+import { getGameById, goToNextRound, setAiGameHand } from '../../actions/users'
 import { ReactComponent as Paper } from '../../assets/images/paper.svg'
 import { ReactComponent as Rock } from '../../assets/images/rock.svg'
 import { ReactComponent as Scissors } from '../../assets/images/scissors.svg'
-import { setWinner } from '../../utils/setWinner'
 import { Player1Choice } from '../uiElements/Player1Choice'
 import { Player2Choice } from '../uiElements/Player2Choice'
 import { RoundWinnerIndicator } from '../uiElements/RoundWinnerIndicator'
@@ -25,7 +24,7 @@ const BounceInDown = styled.div`animation: 1s ${keyframes`${bounceInDown}`}`
 const BounceInUp = styled.div`animation: 1s ${keyframes`${bounceInUp}`}`
 const FadeInRight = styled.div`animation: 1s ${keyframes`${fadeInRight}`}`
 
-export const Game = () => {
+export const GameAi = () => {
 
     const navigate = useNavigate()
     const dispatch = useDispatch()
@@ -57,25 +56,10 @@ export const Game = () => {
 
     }, [ dispatch, gameId, refreshToken, token, user.id ])
 
-    const pickHand = ( hand ) => {
+    const pickHand = async ( hand ) => {
 
-        dispatch(setActiveGamePlayerHand(user.id, activeGame.player2.id, gameId, currentRound, hand, token, refreshToken))
+        await dispatch(setAiGameHand(user.id, gameId, currentRound, hand, token, refreshToken, setActiveGame, activeGame))
 
-        const updatedRound = {
-            round: activeGame.rounds[currentRound-1].round,
-            player1hand: hand,
-            player2hand: activeGame.rounds[currentRound-1].player2hand,
-            winner: setWinner( hand, activeGame.rounds[currentRound-1].player2hand )
-        }
-
-        setActiveGame({
-            ...activeGame,
-            rounds: [
-                ...activeGame.rounds.slice(0, currentRound - 1),
-                updatedRound,
-                ...activeGame.rounds.slice(currentRound)
-            ]
-        })
     }
 
     const nextRound = () => {
@@ -95,43 +79,6 @@ export const Game = () => {
         setShowChat(!showChat)
         setNewMessage(false)
     }
-    
-    socket.on('recieveMessage', (data) => {
-    
-        setChatMessages([
-            ...chatMessages,
-            data
-        ])
-
-        if( !showChat ) {
-            setNewMessage(true);
-        }
-
-    })
-
-    socket.on('handPickedPlayer2', (data) => {
-
-        if ( activeGame.rounds !== undefined ) {
-
-            const currentRoundElement = activeGame.rounds[data.round-1]
-
-            const updatedRound = {
-                round: currentRoundElement.round,
-                player1hand: currentRoundElement.player1hand,
-                player2hand: data.handPicked,
-                winner: setWinner( currentRoundElement.player1hand, data.handPicked )
-            }
-    
-            setActiveGame({
-                ...activeGame,
-                rounds: [
-                    ...activeGame.rounds.slice(0, data.round-1),
-                    updatedRound,
-                    ...activeGame.rounds.slice(data.round)
-                ]
-            })
-        }
-    })
 
     if( loader ) {
         return (

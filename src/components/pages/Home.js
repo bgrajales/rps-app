@@ -60,7 +60,7 @@ export const Home = () => {
     socket.on('challenge', (challenge) => {
 
         const newNotification = {
-            id: Math.random(),
+            id: Math.random().toString(36).slice(2),
             message: `${challenge.challenger} has challenged you!`,
             status: 'unread',
             challenger: challenge.challenger,

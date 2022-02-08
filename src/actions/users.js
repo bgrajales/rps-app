@@ -6,6 +6,7 @@ import { types } from "../types/types"
 
 import socketIOClient from 'socket.io-client'
 import { refreshTokenAction } from './auth';
+import { setWinner } from '../utils/setWinner'
 
 const ENDPOINT = `${process.env.REACT_APP_API_PROTOCOL}://${process.env.REACT_APP_API_HOST}`;
 export const socket = socketIOClient(ENDPOINT);
@@ -388,6 +389,88 @@ export const setOnlineUsers = ( users ) => {
     }
 }
 
+export const challengeAi = ( userId, challengedId, userName, challengedName, navigate, token, refreshToken ) => {
+
+    return (dispatch) => {
+        
+        dispatch( clearError() )
+
+        const headers = {
+            'Content-Type': 'application/json',
+            'authorization': token
+        }
+
+        axios.post(`${apiUrl('challengeAi')}`,{
+            userId,
+            challengedId,
+            userName,
+            challengedName
+        },{
+            headers: headers
+        })
+        .then( ({ data }) => {
+            if (data.gameId) {
+                sessionStorage.setItem('lastPath', `/app/aiGame/${ data.gameId }`)
+                navigate(`/app/gameAi/${ data.gameId }`)
+            }
+        })
+        .catch( err => {
+            dispatch( setError(err.response.data.message) )
+
+            if (err.response.status === 403) {
+                dispatch(refreshTokenAction( refreshToken ))
+            }
+        })
+
+    }
+
+}
+
+export const setAiGameHand = ( userId, gameId, round, hand, token, refreshToken, setActiveGame, activeGame ) => {
+
+    return (dispatch) => {
+
+        const headers = {
+            'Content-Type': 'application/json',
+            'authorization': token
+        }
+
+        axios.post(`${apiUrl('setAiGamePlayerHand')}`,{
+            userId,
+            gameId,
+            round,
+            hand
+        },{
+            headers: headers
+        }).then( ({ data }) => {
+
+            const updatedRound = {
+                round: round,
+                player1hand: hand,
+                player2hand: data.player2hand,
+                winner: setWinner( hand, data.player2hand )
+            }
+    
+            setActiveGame({
+                ...activeGame,
+                rounds: [
+                    ...activeGame.rounds.slice(0, round - 1),
+                    updatedRound,
+                    ...activeGame.rounds.slice(round)
+                ]
+            })
+
+        }).catch( err => {
+
+            if (err.response.status === 403) {
+                dispatch(refreshTokenAction( refreshToken ))
+            }
+
+        })
+    }
+
+} // Refresh Token done
+
 export const setError = ( message ) => ({
     type: types.ERROR,
     payload: message
@@ -396,3 +479,4 @@ export const setError = ( message ) => ({
 export const clearError = () => ({
     type: types.CLEAR_ERROR
 })
+
