@@ -8,7 +8,6 @@ import { finishLoading } from './ui'
 
 export const refreshTokenAction = ( refreshToken ) => {
     return (dispatch) => {
-        console.log('refreshing')
 
         const headers = {
             'Content-Type': 'application/json',
@@ -24,7 +23,6 @@ export const refreshTokenAction = ( refreshToken ) => {
         .then( ({ data }) => {
             dispatch( login( data.user, data.token, data.refreshToken ) )
         }).catch( err => {
-            console.log(err)
             dispatch( logout() )
         })
     }
@@ -48,7 +46,6 @@ export const userLogin = ( userName, password ) => {
             headers: headers
         })
         .then( ({ data }) => {
-            console.log(data)
 
             socket.emit('login', data.user.id)
 
@@ -56,7 +53,6 @@ export const userLogin = ( userName, password ) => {
             
         })
         .catch( err => {
-            console.log(err.response.data.message)
 
             dispatch( setError( err.response.data.message ) )
         })
@@ -66,7 +62,6 @@ export const userLogin = ( userName, password ) => {
 export const userRegister = ( userName, password, repeatPassword ) => {
 
     return (dispatch) => {
-        console.log(userName, password, repeatPassword)
 
         dispatch( clearError() )
         // dispatch( startLoading() )
@@ -84,7 +79,6 @@ export const userRegister = ( userName, password, repeatPassword ) => {
             headers: headers
         })
         .then( ({ data }) => {
-            console.log(data)
 
             socket.emit('login', data.user.id)
 
@@ -117,7 +111,6 @@ export const userLogout = (userId) => {
             dispatch( logout() )
         })
         .catch( err => {
-            console.log(err)
             // Swal.fire('Error', err.message, 'error')
         })
             
@@ -139,7 +132,6 @@ export const userAlreadyLoggedIn = ( refreshToken ) => {
             headers: headers
         })
         .then( ({ data }) => {
-            console.log(data)
             dispatch( login( data.user, data.token, data.refreshToken ) )
             dispatch( finishLoading() )
             socket.emit('login', data.user.id)
@@ -147,7 +139,6 @@ export const userAlreadyLoggedIn = ( refreshToken ) => {
         .catch( err => {
             dispatch( logout() )
             dispatch( finishLoading() )
-            console.log(err)
         })
     }
 

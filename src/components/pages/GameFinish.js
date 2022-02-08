@@ -43,7 +43,6 @@ export const GameFinish = () => {
     }
 
     const finishGame = ( ) => {
-        console.log('finish game', user.id, activeGame.id)
 
         dispatch(finishGameAction( user.id, activeGame.id, token, refreshToken ))
 

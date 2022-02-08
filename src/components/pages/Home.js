@@ -47,7 +47,6 @@ export const Home = () => {
         gamesWon: 0,
         winningStreak: 0,
     })
-    // const [ notifications, setNotifications ] = useState([])
 
     useEffect(() => {
 
@@ -59,7 +58,6 @@ export const Home = () => {
     }, [ user.id, userNotification, token, refreshToken, dispatch ])
 
     socket.on('challenge', (challenge) => {
-        console.log(challenge)
 
         const newNotification = {
             id: Math.random(),
@@ -160,7 +158,7 @@ export const Home = () => {
             <header className="container home__header">
                 <h1>RPS</h1>
                 <div className="base__navBar">
-                <Dropdown onClick={ handleReadNotifications }>
+                    <Dropdown onClick={ handleReadNotifications }>
                     <Dropdown.Toggle variant="" id="dropdown-basic" className={ badgeIcon ? 'badgeDot' : '' }>
                         <BsFillBellFill className="home__notifBell" />
                     </Dropdown.Toggle>

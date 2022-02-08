@@ -21,11 +21,9 @@ export const getChallengers = ( userId, token, refreshToken ) => {
                 headers: headers
             })
             .then( ({ data }) => {
-                console.log(data.users)
                 dispatch( setOnlineUsers(data.users) )
             })
             .catch( err => {
-                console.log(err)
 
                 if( err.response.status === 403) {
                     dispatch( refreshTokenAction(refreshToken) )
@@ -51,7 +49,6 @@ export const getStats = ( userId, setStats, token, refreshToken, setLoading ) =>
             })
             setLoading(false)
         }).catch( err => {
-            console.log(err)
             setLoading(false)
             if (err.response.status === 403) {
                 dispatch(refreshTokenAction( refreshToken ))
@@ -80,7 +77,6 @@ export const challengeUser = ( userId, challengedId, userName, challengedName, n
             headers: headers
         })
         .then( ({ data }) => {
-            console.log(data)
             if (data.gameId) {
 
                 socket.emit('sendChallenge', {
@@ -121,12 +117,10 @@ export const getActiveGames = ( userId, setCurrentGames, page, setMaxPages, setL
         axios.get(`${apiUrl('getActiveGames')}?userId=${userId}&page=${page}`, {
             headers: headers
         }).then( ({ data }) => {
-            console.log(data)
             setCurrentGames(data.games)
             setMaxPages(data.maxPages)
             setLoader(false)
         }).catch( err => {
-            console.log(err)
 
             if (err.response.status === 403) {
                 dispatch(refreshTokenAction( refreshToken ))
@@ -136,7 +130,7 @@ export const getActiveGames = ( userId, setCurrentGames, page, setMaxPages, setL
     }
 } // Refresh Token done
 
-export const getGameRound = ( userId, gameId, setRound, setActiveGame, token, refreshToken, setLoader, setChatMessages ) => {
+export const getGameById = ( userId, gameId, setActiveGame, token, refreshToken, setLoader, setChatMessages, setCurrentRound ) => {
     
     return (dispatch) => {
         const headers = {
@@ -148,25 +142,17 @@ export const getGameRound = ( userId, gameId, setRound, setActiveGame, token, re
             headers: headers
         })
         .then( ({ data }) => {
-            console.log(data)
+
             setActiveGame(data)
             
             setChatMessages(data.chat)
             
-            const activeGame = data
-
-            setRound({
-                round: activeGame.currentRound,
-                player1hand: activeGame.rounds[activeGame.currentRound-1].player1hand,
-                player2hand: activeGame.rounds[activeGame.currentRound-1].player2hand,
-                winner: activeGame.rounds[activeGame.currentRound-1].winner
-            })
+            setCurrentRound(data.currentRound)
 
             setLoader(false)
 
         })
         .catch( err => {
-            console.log(err)
             setLoader(false)
             if (err.response.status === 403) {
                 dispatch(refreshTokenAction( refreshToken ))
@@ -188,7 +174,6 @@ export const getActiveGame = ( userId, gameId, setActiveGame, token, refreshToke
             headers: headers
         })
         .then( ({ data }) => {
-            console.log(data)
             setActiveGame(data)
             
             setChatMessages(data.chat)
@@ -199,7 +184,6 @@ export const getActiveGame = ( userId, gameId, setActiveGame, token, refreshToke
             
         })
         .catch( err => {
-            console.log(err)
             setLoader(false)
             if (err.response.status === 403) {
                 dispatch(refreshTokenAction( refreshToken ))
@@ -209,7 +193,7 @@ export const getActiveGame = ( userId, gameId, setActiveGame, token, refreshToke
 
 } // Refresh Token done
 
-export const setActiveGamePlayerHand = ( userId, challengedId, gameId, round, hand, setRound, roundGame, setActiveGame, activeGame, token, refreshToken ) => {
+export const setActiveGamePlayerHand = ( userId, challengedId, gameId, round, hand, token, refreshToken ) => {
 
     return (dispatch) => {
 
@@ -227,30 +211,14 @@ export const setActiveGamePlayerHand = ( userId, challengedId, gameId, round, ha
         },{
             headers: headers
         }).then( ({ data }) => {
-            console.log(data)
 
-            const newRound = {
+            socket.emit('handPicked', {
+                gameId: gameId,
+                handPicked: hand,
                 round: round,
-                player1hand: hand,
-                player2hand: roundGame.player2hand,
-                winner: data.winner            
-            }
-        
-            setRound(newRound)
-
-            const newActiveGame = {
-                ...activeGame,
-                rounds: [
-                    ...activeGame.rounds.slice(0, round-1),
-                    newRound,
-                    ...activeGame.rounds.slice(round)
-                ]
-            }
-
-            setActiveGame(newActiveGame)
+            })
         
         }).catch( err => {
-            console.log(err)
 
             if (err.response.status === 403) {
                 dispatch(refreshTokenAction( refreshToken ))
@@ -261,7 +229,7 @@ export const setActiveGamePlayerHand = ( userId, challengedId, gameId, round, ha
 
 } // Refresh Token done
 
-export const goToNextRound = ( userId, gameId, currentRound, setRound, token, refreshToken ) => {
+export const goToNextRound = ( userId, gameId, currentRound, token, refreshToken ) => {
 
     return (dispatch) => {
         const headers = {
@@ -272,15 +240,7 @@ export const goToNextRound = ( userId, gameId, currentRound, setRound, token, re
         axios.get( `${apiUrl('nextRound')}?userId=${userId}&gameId=${gameId}&currentRound=${currentRound}`, {
             headers: headers
         }).then( ({ data }) => {
-            console.log(data)
-            setRound({
-                round: currentRound+1,
-                player1hand: 'null',
-                player2hand: 'null',
-                winner: 'null'
-            })
         }).catch( err => {
-            console.log(err)
 
             if (err.response.status === 403) {
                 dispatch(refreshTokenAction( refreshToken ))
@@ -304,9 +264,7 @@ export const finishGameAction = ( userId, gameId, token, refreshToken) => {
         }, {
             headers: headers
         }).then( ({ data }) => {
-            console.log(data)
         }).catch( err => {
-            console.log(err)
 
             if (err.response.status === 403) {
                 dispatch(refreshTokenAction( refreshToken ))
@@ -333,7 +291,6 @@ export const getGamesHistory = ( userId, setGames, page, setMaxPage, setLoader, 
             setLoader(false)
             
         }).catch( err => {
-            console.log(err)
             if (err.response.status === 403) {
                 dispatch(refreshTokenAction( refreshToken ))
             }
@@ -356,10 +313,8 @@ export const markNotificationAsRead = ( userId, token, refreshToken ) => {
             headers: headers
         }).then( ( { data } ) => {
 
-            console.log(data)
             
         }).catch( err => {
-            console.log(err)
             if (err.response.status === 403) {
                 dispatch(refreshTokenAction( refreshToken ))
             }
@@ -383,10 +338,8 @@ export const deleteSelectedNotif = ( userId, gameId, token, refreshToken) => {
             headers: headers    
         }).then( ( { data } ) => {
 
-            console.log(data)
 
         }).catch( err => {
-            console.log(err)
 
             if (err.response.status === 403) {
                 dispatch(refreshTokenAction( refreshToken ))
@@ -408,7 +361,6 @@ export const searchUser = ( userName, setUserSearched, token, refreshToken ) => 
             headers: headers
         }).then( ( { data } ) => {
 
-            console.log(data)
             
             if( data.userName ) {
                 setUserSearched({
@@ -418,7 +370,6 @@ export const searchUser = ( userName, setUserSearched, token, refreshToken ) => 
             }  
 
         }).catch( err => {
-            console.log(err)
 
             if (err.response.status === 403) {
                 dispatch(refreshTokenAction( refreshToken ))

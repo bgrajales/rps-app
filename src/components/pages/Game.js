@@ -11,7 +11,7 @@ import styled, { keyframes } from 'styled-components'
 import { bounceInDown, bounceInUp, fadeInRight } from 'react-animations'
 import { Transition, animated } from 'react-spring'
 
-import { getGameRound, goToNextRound, setActiveGamePlayerHand, socket } from '../../actions/users'
+import { getGameById, goToNextRound, setActiveGamePlayerHand, socket } from '../../actions/users'
 import { ReactComponent as Paper } from '../../assets/images/paper.svg'
 import { ReactComponent as Rock } from '../../assets/images/rock.svg'
 import { ReactComponent as Scissors } from '../../assets/images/scissors.svg'
@@ -36,63 +36,59 @@ export const Game = () => {
     const token = useSelector(state => state.auth.token)
     const refreshToken = useSelector(state => state.auth.refreshToken)
     
-    const [ activeGame, setActiveGame ] = useState({})
-
-    const [ currentRound, setCurrentRound ] = useState(1)
-    const [ updateGame, setUpdateGame ] = useState(false)
     const [ loader, setLoader ] = useState(true)
 
     const [ showChat, setShowChat ] = useState(false)
     const [ chatMessages, setChatMessages ] = useState([])
     const [ newMessage, setNewMessage ] = useState(false)
 
-    const [roundGame, setRound] = useState({
-        round: 'null',
-        player1hand: 'null',
-        player2hand: 'null',
-        winner: 'null'
-    })
+    const [ activeGame, setActiveGame ] = useState({})
+    const [ currentRound, setCurrentRound ] = useState()
 
     useEffect(() => {
-        
-        dispatch(getGameRound( user.id, gameId, setRound, setActiveGame, token, refreshToken, setLoader, setChatMessages ))
 
         document.body.classList.add('game-page')
+
+        dispatch(getGameById(user.id, gameId, setActiveGame, token, refreshToken, setLoader, setChatMessages, setCurrentRound))
 
         return () => {
             document.body.classList.remove('game-page')
         }
 
-    }, [ user.id, gameId, updateGame, token, refreshToken, dispatch ])
+    }, [ dispatch, gameId, refreshToken, token, user.id ])
 
     const pickHand = ( hand ) => {
 
-        socket.emit('handPicked', {
-            gameId: activeGame.id,
-            handPicked: hand
+        dispatch(setActiveGamePlayerHand(user.id, activeGame.player2.id, gameId, currentRound, hand, token, refreshToken))
+
+        const updatedRound = {
+            round: activeGame.rounds[currentRound-1].round,
+            player1hand: hand,
+            player2hand: activeGame.rounds[currentRound-1].player2hand,
+            winner: setWinner( hand, activeGame.rounds[currentRound-1].player2hand )
+        }
+
+        setActiveGame({
+            ...activeGame,
+            rounds: [
+                ...activeGame.rounds.slice(0, currentRound - 1),
+                updatedRound,
+                ...activeGame.rounds.slice(currentRound)
+            ]
         })
-
-        dispatch(setActiveGamePlayerHand( user.id, activeGame.player2.id, activeGame.id, roundGame.round, hand, setRound, roundGame, setActiveGame, activeGame, token, refreshToken))
-
     }
 
-    const nextRound = ( ) => {
+    const nextRound = () => {
 
-        dispatch(goToNextRound( user.id, activeGame.id, roundGame.round, setRound, token, refreshToken ))
+        dispatch(goToNextRound(user.id, gameId, currentRound, token, refreshToken))
 
-        dispatch(getGameRound( user.id, gameId, setRound, setActiveGame, token, refreshToken, setLoader, setChatMessages ))
+        setCurrentRound(currentRound + 1)
 
-        if( roundGame.round < 3 ) {
-            
-            setActiveGame({
-                ...activeGame,
-                currentRound: activeGame.currentRound+1
-            })
-
-            setCurrentRound( currentRound+1 )
-            
-        } 
-        
+        setActiveGame({
+            ...activeGame,
+            currentRound: currentRound + 1
+        })
+    
     }
 
     const handleChatIconClick = () => {
@@ -100,25 +96,6 @@ export const Game = () => {
         setNewMessage(false)
     }
     
-    socket.on('handPickedPlayer2', (data) => {
-
-        const roundWinner = setWinner( roundGame.player1hand, data )
-
-        const updatedRound = {
-            round: roundGame.round,
-            player1hand: roundGame.player1hand,
-            player2hand: data,
-            winner: roundWinner
-        }
-
-        setRound(updatedRound)
-        
-        setTimeout(() => {
-            setUpdateGame(!updateGame)        
-        }, 1000)
-
-    })
-
     socket.on('recieveMessage', (data) => {
     
         setChatMessages([
@@ -132,12 +109,44 @@ export const Game = () => {
 
     })
 
+    socket.on('handPickedPlayer2', (data) => {
+
+        if ( activeGame.rounds !== undefined ) {
+
+            const currentRoundElement = activeGame.rounds[data.round-1]
+
+            const updatedRound = {
+                round: currentRoundElement.round,
+                player1hand: currentRoundElement.player1hand,
+                player2hand: data.handPicked,
+                winner: setWinner( currentRoundElement.player1hand, data.handPicked )
+            }
+    
+            setActiveGame({
+                ...activeGame,
+                rounds: [
+                    ...activeGame.rounds.slice(0, data.round-1),
+                    updatedRound,
+                    ...activeGame.rounds.slice(data.round)
+                ]
+            })
+        }
+    })
+
+    if( loader ) {
+        return (
+            <div className="loader-container">
+                <Oval width={100} height={100} />
+            </div>
+        )
+    }
+
     return (
         <div className="game__div">
             <BounceInDown>
                 <header>
                     <div>
-                        <h2>Round {roundGame.round}/3</h2>
+                        <h2>Round {activeGame.rounds[currentRound-1].round}/3</h2>
                         <div className="game__nameDiv">
                             <h4>{ user.userName }</h4>
                             {
@@ -164,15 +173,15 @@ export const Game = () => {
             <div className="game__handsPickDiv">
                 <BounceInDown className="game__player2Choice">
                         {
-                            roundGame.player2hand === 'null' || roundGame.player1hand === 'null' ?
+                            activeGame.rounds[currentRound-1].player2hand === 'null' || activeGame.rounds[currentRound-1].player1hand === 'null' ?
                             <div className="game__player2ChoiceNull">
                                 <h1>{
-                                    roundGame.player2hand === 'null' ? 'Waiting for Player 2' : 'Player 2 has picked!'
+                                    activeGame.rounds[currentRound-1].player2hand === 'null' ? 'Waiting for Player 2' : 'Player 2 has picked!'
                                 }</h1>
                             </div>
                             :
                             <div className="game__player2ChoicePickand">
-                                <Player2Choice hand={ roundGame.player2hand } />
+                                <Player2Choice hand={ activeGame.rounds[currentRound-1].player2hand } />
                             </div>
                         }
                 </BounceInDown>
@@ -188,7 +197,7 @@ export const Game = () => {
                         :
                         <>
                         {
-                            roundGame.player1hand === 'null' ?
+                            activeGame.rounds[currentRound-1].player1hand === 'null' ?
                             <div className="game__player1ChoiceNull">
                                 <h1>Pick your hand!</h1>
                                 <div className="game__player1ChoiceHand">
@@ -205,7 +214,7 @@ export const Game = () => {
                             </div>
                             :
                             <div className="game__player1ChoicePick">
-                                <Player1Choice hand={roundGame.player1hand} />
+                                <Player1Choice hand={activeGame.rounds[currentRound-1].player1hand} />
                             </div>
                         }
                         </>
@@ -215,10 +224,10 @@ export const Game = () => {
             </div>
 
             {
-                (roundGame.round !== 3 && (roundGame.player1hand !== 'null' && roundGame.player2hand !== 'null')) &&
+                (activeGame.rounds[currentRound-1].round !== 3 && (activeGame.rounds[currentRound-1].player1hand !== 'null' && activeGame.rounds[currentRound-1].player2hand !== 'null')) &&
                 <FadeInRight className="game__roundWinner">
                     {
-                        roundGame.winner === 'player1' ?
+                        activeGame.rounds[currentRound-1].winner === 'player1' ?
                         <h1>You Win this round!</h1>
                         :
                         <h1>You Lose this round!</h1>
@@ -287,7 +296,7 @@ export const Game = () => {
             </div>
 
             {
-                roundGame.round === 3 && roundGame.winner !== 'null' &&
+                activeGame.rounds[currentRound-1].round === 3 && activeGame.rounds[currentRound-1].winner !== 'null' &&
                 <FadeInRight className="game__roundWinner">
                     {
                         <Button variant="primary" onClick={ () => navigate(`/app/gameFinish/${gameId}`) }>

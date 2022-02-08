@@ -16,7 +16,6 @@ export const GameDiv = ({ game }) => {
 
 
     const handleContinue = () => {
-        console.log('continue')
 
         deleteSelectedNotif( user.id, game.id, token )
 

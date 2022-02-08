@@ -16,7 +16,6 @@ export const ChallengeUser = ({ user }) => {
     const refreshToken = useSelector(state => state.auth.refreshToken)
     
     const handleChallengeUser = () => {
-        console.log('challenge user', user.id)
 
         dispatch( challengeUser( challenger.id, user.id, challenger.userName, user.userName, navigate, token, refreshToken ) )
 
