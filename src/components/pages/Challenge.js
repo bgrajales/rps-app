@@ -18,7 +18,7 @@ export const Challenge = () => {
     const dispatch = useDispatch()
 
     const error = useSelector(state => state.error)
-    const onlineUsers = useSelector(state => state.users.onlineUsers)
+    const onlineUsers = useSelector(state => state.users.onlineUsers) || []
     const user = useSelector(state => state.auth.user)
     const token = useSelector(state => state.auth.token)
     const refreshToken = useSelector(state => state.auth.refreshToken)
@@ -63,7 +63,7 @@ export const Challenge = () => {
             setAiUsers( auxAiUsers )
         }
 
-    }, [dispatch, user.id, token, refreshToken, onlineUsers, aiUsers])
+    }, [dispatch, user.id, token, refreshToken, onlineUsers.length, aiUsers.length])
 
     const handleSearchChange = (e) => {
         setUserInput(e.target.value)
